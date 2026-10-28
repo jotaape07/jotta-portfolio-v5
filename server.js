@@ -69,8 +69,40 @@ async function writeFile(file,obj){await fs.mkdir(path.dirname(file),{recursive:
 async function supa(pathname,method='GET',body){const base=process.env.SUPABASE_URL.replace(/\/$/,'');const r=await fetch(`${base}/rest/v1/${pathname}`,{method,headers:{'apikey':process.env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},...(body?{body:JSON.stringify(body)}:{}) ,signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Banco de dados indisponível: '+r.status);return r.json()}
 async function readSite(){if(!SUPA)return normalize(await localFile(SITE_DB,DEFAULT));const rows=await supa('site_config?select=content&id=eq.main&limit=1');return normalize(rows[0]?.content||DEFAULT)}
 async function saveSite(obj){const doc=normalize(obj);if(SUPA)await supa('site_config?on_conflict=id','POST',[{id:'main',content:doc,updated_at:new Date().toISOString()}]);else await writeFile(SITE_DB,doc);return doc}
+
+/* Avisos do portfólio no Discord: webhook privado armazenado apenas no Render. */
+async function notifyDiscord(title,description,link){
+ const webhook=process.env.DISCORD_UPDATES_WEBHOOK_URL||'';
+ if(!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\/\d+\/[\w-]+$/.test(webhook))return false;
+ const payload={username:'JOTTA STUDIOS • NOVIDADES',allowed_mentions:{parse:[]},
+  embeds:[{title:String(title).slice(0,200),description:String(description).slice(0,1200),url:link||'https://jotta-portfolio-v5.onrender.com/',
+   color:15749955,footer:{text:'JOTTA STUDIOS | PORTFÓLIO • ATUALIZAÇÕES'},timestamp:new Date().toISOString()}]};
+ try{const r=await fetch(webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(5000)});
+  if(!r.ok)throw Error('Discord HTTP '+r.status);return true;
+ }catch(e){console.error('[JOTTA DISCORD]',e.message);return false}
+}
+function diffForDiscord(before,after){
+ const notes=[];
+ if(JSON.stringify(before.pricing)!==JSON.stringify(after.pricing))notes.push('💰 Tabela de preços atualizada');
+ if(JSON.stringify(before.vipPlans)!==JSON.stringify(after.vipPlans)||JSON.stringify(before.booster)!==JSON.stringify(after.booster))notes.push('💎 Planos VIP ou benefícios dos boosters atualizados');
+ if(JSON.stringify(before.projects)!==JSON.stringify(after.projects))notes.push('🧩 Portfólio de projetos atualizado');
+ if(JSON.stringify(before.games)!==JSON.stringify(after.games))notes.push('🎮 Catálogo de jogos atualizado');
+ if(JSON.stringify(before.services)!==JSON.stringify(after.services))notes.push('⚙️ Serviços do estúdio atualizados');
+ if(JSON.stringify(before.gallery)!==JSON.stringify(after.gallery))notes.push('🖼️ Apresentação da galeria atualizada');
+ if(JSON.stringify(before.hero)!==JSON.stringify(after.hero)||JSON.stringify(before.about)!==JSON.stringify(after.about))notes.push('✨ Apresentação visual atualizada');
+ if(JSON.stringify(before.links)!==JSON.stringify(after.links))notes.push('🔗 Informações e links atualizados');
+ if(!notes.length&&JSON.stringify(before)!==JSON.stringify(after))notes.push('✨ Melhorias publicadas no portfólio');
+ return notes;
+}
+
 app.get('/api/site',async(req,res)=>{try{res.set('Cache-Control','no-store');res.json({content:await readSite()})}catch(e){console.error(e);res.status(503).json({error:'Não foi possível carregar o conteúdo.'})}});
-app.put('/api/admin/site',requireAuth,async(req,res)=>{try{const result=await saveSite(req.body?.content);res.json({ok:true,content:result,persistent:SUPA})}catch(e){console.error(e);res.status(503).json({error:'Falha ao salvar. Confira o Supabase.'})}});
+app.put('/api/admin/site',requireAuth,async(req,res)=>{try{
+ const previous=await readSite(),result=await saveSite(req.body?.content);
+ const notes=diffForDiscord(previous,result);
+ let discordNotified=false;
+ if(notes.length)discordNotified=await notifyDiscord('🚀 NOVA ATUALIZAÇÃO NO PORTFÓLIO',notes.join('\\n'),'https://jotta-portfolio-v5.onrender.com/');
+ res.json({ok:true,content:result,persistent:SUPA,discordNotified,discordConfigured:!!process.env.DISCORD_UPDATES_WEBHOOK_URL});
+ }catch(e){console.error(e);res.status(503).json({error:'Falha ao salvar. Confira o Supabase.'})}});
 const ROBLOX_ID='1729771980',AVATAR_TTL=4*60000,avatarCache={at:0,value:null};
 app.get('/api/roblox-avatar',async(req,res)=>{res.set('Cache-Control','no-store');if(avatarCache.value&&Date.now()-avatarCache.at<AVATAR_TTL)return res.json(avatarCache.value);
  try{const prefix='https://thumbnails.roblox.com/v1/users/',suffix=`?userIds=${ROBLOX_ID}&size=420x420&format=Png&isCircular=false`;
@@ -87,7 +119,9 @@ async function allMedia(){if(!CLOUD)return localFile(DB,[]);const rows=[];for(co
 app.get('/api/media',async(req,res)=>{try{res.set('Cache-Control','no-store');res.json({items:await allMedia()})}catch(e){console.error(e);res.status(503).json({error:'Galeria temporariamente indisponível'})}});
 app.post('/api/admin/media',requireAuth,upload.single('media'),async(req,res)=>{try{if(!req.file)return res.status(400).json({error:'Selecione uma imagem ou vídeo válido.'});const type=req.file.mimetype.startsWith('video/')?'video':'image';if(type==='image'&&req.file.size>15*1048576)return res.status(413).json({error:'Imagem deve ter até 15 MB'});const title=clean(req.body.title,100)||'Mídia sem título',description=clean(req.body.description,250),category=categories.has(req.body.category)?req.body.category:'projetos';let item;
  if(CLOUD){const result=await new Promise((resolve,reject)=>{const stream=cloudinary.uploader.upload_stream({folder:'jotta_portfolio_v5',resource_type:type,context:{caption:title,description,category}},(err,r)=>err?reject(err):resolve(r));stream.end(req.file.buffer)});item=normalizeCloud({...result,context:{custom:{caption:title,description,category}}})}
- else{const ext=({'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','image/gif':'.gif','video/mp4':'.mp4','video/webm':'.webm','video/quicktime':'.mov'})[req.file.mimetype];const name=crypto.randomUUID()+ext;await fs.mkdir(UPLOADS,{recursive:true});await fs.writeFile(path.join(UPLOADS,name),req.file.buffer);item={id:name,title,description,category,type,url:'/uploads/'+name,thumbnail:type==='image'?'/uploads/'+name:'',date:new Date().toISOString(),storage:'local'};const rows=await allMedia();rows.unshift(item);await writeFile(DB,rows)}res.status(201).json({item})
+ else{const ext=({'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','image/gif':'.gif','video/mp4':'.mp4','video/webm':'.webm','video/quicktime':'.mov'})[req.file.mimetype];const name=crypto.randomUUID()+ext;await fs.mkdir(UPLOADS,{recursive:true});await fs.writeFile(path.join(UPLOADS,name),req.file.buffer);item={id:name,title,description,category,type,url:'/uploads/'+name,thumbnail:type==='image'?'/uploads/'+name:'',date:new Date().toISOString(),storage:'local'};const rows=await allMedia();rows.unshift(item);await writeFile(DB,rows)}
+ await notifyDiscord(type==='video'?'🎬 NOVO VÍDEO DE SISTEMA':'🖼️ NOVA IMAGEM NO PORTFÓLIO',`**${title}**\n${description||'Novo trabalho adicionado à vitrine.'}`,'https://jotta-portfolio-v5.onrender.com/#media');
+ res.status(201).json({item})
  }catch(e){console.error(e);res.status(500).json({error:'Falha no upload. Verifique as configurações.'})}});
 app.delete('/api/admin/media/:id',requireAuth,async(req,res)=>{try{const all=await allMedia(),item=all.find(x=>x.id===req.params.id);if(!item)return res.status(404).json({error:'Mídia não encontrada'});if(CLOUD)await cloudinary.uploader.destroy(item.id,{resource_type:item.type,invalidate:true});else{await writeFile(DB,all.filter(x=>x.id!==item.id));await fs.unlink(path.join(UPLOADS,path.basename(item.url))).catch(()=>{})}res.json({ok:true})}catch(e){console.error(e);res.status(500).json({error:'Falha ao excluir mídia'})}});
 app.use((err,req,res,next)=>{if(err instanceof multer.MulterError)return res.status(413).json({error:'Arquivo excedeu o limite de 80 MB.'});console.error(err);res.status(500).json({error:'Erro interno'})});
