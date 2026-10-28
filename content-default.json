@@ -3,16 +3,16 @@
   "accent": "red",
   "intro": {
     "overline": "JOTTA STUDIO / INDEPENDENT DEVELOPMENT",
-    "line": "MADE TO STAND OUT.",
-    "note": "LUАU  /  ROBLOX STUDIO  /  DESIGN  /  DEVELOPMENT",
-    "background": "assets/01_abertura_red_studio.jpg"
+    "line": "IDEIAS VIRAM JOGOS.",
+    "note": "LUAU / ROBLOX STUDIO / DESIGN / DEVELOPMENT",
+    "background": "assets/jotta-command-studio.svg"
   },
   "hero": {
-    "eyebrow": "JOTTA / LEAD DEVELOPER & SCRIPTER",
-    "line1": "BUILDING",
-    "line2": "THE FUTURE.",
-    "description": "Experiências que marcam. Sistemas que funcionam. Ideias que se tornam jogos e projetos reais.",
-    "background": "assets/02_capa_yellow_tech.jpg",
+    "eyebrow": "JOTTA STUDIO // LEAD DEVELOPER & SCRIPTER",
+    "line1": "CRIANDO",
+    "line2": "UNIVERSOS.",
+    "description": "Desenvolvimento, scripting e design para transformar ideias em experiências que realmente impressionam.",
+    "background": "assets/jotta-forest-scene.svg",
     "avatar": true
   },
   "about": {
@@ -105,8 +105,8 @@
   ],
   "gallery": {
     "title": "INSIDE THE STUDIO",
-    "subtitle": "Artes conceituais e registros dos projetos em desenvolvimento.",
-    "highlight": "assets/03_galeria_red_archive.jpg"
+    "subtitle": "Capas, interfaces, bastidores e visuais dos meus projetos.",
+    "highlight": "assets/jotta-visual-archive.svg"
   },
   "settings": {
     "showServices": true,
