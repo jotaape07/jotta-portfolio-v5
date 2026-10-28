@@ -219,3 +219,19 @@ body.scrolled .nav{background:rgba(8,10,12,.96);border-color:rgba(255,77,62,.30)
 @media(max-height:780px) and (min-width:691px){.intro{padding-top:16px;padding-bottom:15px}.intro-giant{font-size:min(18vw,255px);margin-top:10px}.intro-center h2{font-size:clamp(25px,3vw,47px);margin-top:9px}.intro-center p{margin:9px 0 13px}.intro-enter{padding:13px 20px}}
 @media(max-width:690px){.intro-center{padding:18px 0}.intro-giant{font-size:clamp(105px,27vw,185px);margin-top:23px}.intro-center h2{font-size:clamp(25px,7.5vw,44px);letter-spacing:.035em;line-height:1.05;margin-top:18px}.intro-center p{font-size:9px;max-width:290px;letter-spacing:.11em;line-height:1.65}.intro-kicker{letter-spacing:.05em;max-width:290px}.intro-enter{min-width:min(100%,280px);padding:17px 16px}.intro-top,.intro-bottom{font-size:8px}.intro-bottom>span:first-child{max-width:210px}}
 @media(max-height:560px){.intro-top,.intro-bottom{display:none}.intro-center{padding:10px 0}.intro-giant{font-size:min(22vw,165px)}.intro-center h2{font-size:clamp(24px,5vw,39px);margin-top:8px}.intro-center p{margin:7px 0}.intro-enter{padding:12px 17px}}
+
+/* Gallery HD / JOTTA UI: keep screenshots crisp and readable */
+.media-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.media-card{min-width:0;overflow:hidden;border:1px solid rgba(220,232,240,.18);background:#121820}
+.media-cover{aspect-ratio:16/9;height:auto;position:relative;isolation:isolate;background:#07090c}
+.media-cover img{width:100%;height:100%;object-fit:contain;object-position:center;filter:none!important;image-rendering:auto;transform:none;opacity:1}
+.media-card:hover .media-cover img{filter:none!important;transform:scale(1.018)}
+.media-play{position:absolute;inset:auto 20px 20px auto;display:grid;place-items:center;min-width:54px;height:54px;border-radius:50%;background:rgba(247,65,58,.94);box-shadow:0 0 28px rgba(247,65,58,.30);font-size:23px;color:white;line-height:1;border:1px solid rgba(255,255,255,.45)}
+.media-text{gap:14px;min-height:93px}
+.media-text strong{font-size:clamp(23px,2.1vw,35px);line-height:1.05}
+.media-text small{white-space:nowrap;color:#ff776c;font-size:10px;font-weight:800}
+.contact-links a[data-discord-copy]{cursor:pointer}
+#contactDiscord[role="button"]{cursor:pointer;background:rgba(255,255,255,.10);font-size:clamp(10px,.95vw,14px);letter-spacing:-.02em}
+#contactDiscord[role="button"]:hover{background:#0b0d10;color:#ff726c}
+@media(max-width:980px){.media-grid{grid-template-columns:1fr 1fr;gap:14px}.media-text strong{font-size:22px}}
+@media(max-width:690px){.media-grid{grid-template-columns:1fr;gap:16px}.media-cover{aspect-ratio:16/9}.media-text{min-height:0}.media-text strong{font-size:25px}.media-play{width:48px;height:48px;right:15px;bottom:15px}}
