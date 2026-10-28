@@ -184,6 +184,20 @@
       "description": "Jogo ou plataforma de maior porte, dividido em etapas.",
       "from": 0,
       "tag": "SOB MEDIDA"
+    },
+    {
+      "id": "site",
+      "name": "Landing page personalizada",
+      "description": "Página responsiva para divulgar serviço, marca ou produto, com conteúdo e CTA definidos em orçamento.",
+      "from": 350,
+      "tag": "WEB DESIGN"
+    },
+    {
+      "id": "portfolio",
+      "name": "Portfólio / site profissional",
+      "description": "Site de apresentação com seções personalizadas, galeria e animações. Painel e integrações são opcionais.",
+      "from": 650,
+      "tag": "SITE PREMIUM"
     }
   ],
   "vipPlans": [
