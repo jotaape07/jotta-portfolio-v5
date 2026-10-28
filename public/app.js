@@ -20,7 +20,30 @@ function mediaType(m){return m.type==='video'||m.category==='videos'?'video':'im
 function renderMedia(){const grid=$('#mediaGrid'),empty=$('#galleryEmpty');grid.replaceChildren();const filtered=media.filter(m=>activeFilter==='todos'||(activeFilter==='videos'?mediaType(m)==='video':m.category===activeFilter));txt('#mediaCount','/ '+String(media.length).padStart(2,'0')+' ITEMS');empty.hidden=filtered.length!==0;for(const m of filtered){const b=el('button','media-card');b.type='button';const cover=el('div','media-cover'),img=el('img');img.loading='lazy';img.src=safeImg(m.thumbnail||m.url,'assets/systems-poster.svg');img.alt=m.title||'Projeto';cover.append(img);if(mediaType(m)==='video')cover.append(el('span','media-play','▶'));const details=el('div','media-text');details.append(el('strong','',m.title||'Sem título'),el('small','',labels[m.category]||'ARCHIVE'));b.append(cover,details);b.addEventListener('click',()=>openMedia(m));grid.append(b)}}
 function openMedia(m){const modal=$('#lightbox'),holder=$('#lightboxBody');holder.replaceChildren();const video=mediaType(m)==='video',obj=el(video?'video':'img');if(video){obj.src=m.url;obj.controls=true;obj.autoplay=true;obj.playsInline=true}else{obj.src=m.url;obj.alt=m.title||'Imagem ampliada'}holder.append(obj);txt('#lightboxTitle',m.title||'MÍDIA');txt('#lightboxMeta',labels[m.category]||'PROJECT');modal.hidden=false;B.classList.add('modal-open');$('#lightboxClose').focus()}
 function closeMedia(){const m=$('#lightbox');m.hidden=true;$('#lightboxBody').replaceChildren();B.classList.remove('modal-open')}
-async function loadMedia(){try{const r=await fetch('/api/media',{cache:'no-store'});if(!r.ok)throw Error();media=(await r.json()).items||[];if(!media.length){media=[{id:'studio-hunters',title:'Caçadores de Lendas — Atmosfera',category:'projetos',type:'image',url:'assets/jotta-hunters-forest.svg'},{id:'studio-game',title:'Roblox Studio — Desenvolvimento',category:'bastidores',type:'image',url:'assets/jotta-developer-workspace.svg'},{id:'studio-systems',title:'Systems Lab — Interface',category:'interfaces',type:'image',url:'assets/jotta-systems-lab.svg'},{id:'studio-archive',title:'JOTTA — Design e Criação',category:'capas',type:'image',url:'assets/jotta-gallery-board.svg'}]}}catch{media=[]}renderMedia()}
+const builtInGallery=[
+ {id:'jotta-city-house',title:'Arquitetura e Ambientação Roblox',category:'projetos',type:'image',url:'assets/Roblox_Mapa_01.webp'},
+ {id:'jotta-city-overview',title:'Mapa da Cidade — Roblox Studio',category:'projetos',type:'image',url:'assets/Roblox_Mapa_02.webp'},
+ {id:'jotta-cherry-road',title:'Cenário Noturno — Game World',category:'gameplay',type:'image',url:'assets/Roblox_Mapa_03.webp'},
+ {id:'jotta-car-road',title:'Veículos e Iluminação',category:'gameplay',type:'image',url:'assets/Roblox_Mapa_04.webp'},
+ ...Array.from({length:6},(_,i)=>{const n=String(i+1).padStart(2,'0');return {id:'jotta-system-'+n,title:'Gameplay — Sistema Roblox '+n,category:'videos',type:'video',url:'assets/Roblox_Sistema_'+n+'.mp4',thumbnail:'assets/Roblox_Sistema_'+n+'_Capa.webp'}})
+];
+async function loadMedia(){
+ let remote=[];
+ try{const r=await fetch('/api/media',{cache:'no-store'});if(r.ok)remote=(await r.json()).items||[]}catch(e){console.warn('Galeria:',e.message)}
+ // Imagens e vídeos commitados em public/assets são permanentes e aparecem automaticamente.
+ const present=await Promise.all(builtInGallery.map(async item=>{
+   try{const r=await fetch(item.url,{method:'HEAD',cache:'no-store'});return r.ok?item:null}catch{return null}
+ }));
+ const uploaded=present.filter(Boolean);
+ media=[...remote,...uploaded];
+ if(!media.length)media=[
+   {id:'studio-hunters',title:'Caçadores de Lendas — Atmosfera',category:'projetos',type:'image',url:'assets/jotta-hunters-forest.svg'},
+   {id:'studio-game',title:'Roblox Studio — Desenvolvimento',category:'bastidores',type:'image',url:'assets/jotta-developer-workspace.svg'},
+   {id:'studio-systems',title:'Systems Lab — Interface',category:'interfaces',type:'image',url:'assets/jotta-systems-lab.svg'},
+   {id:'studio-archive',title:'JOTTA — Design e Criação',category:'capas',type:'image',url:'assets/jotta-gallery-board.svg'}
+ ];
+ renderMedia();
+}
 async function loadSite(){try{const r=await fetch('/api/site',{cache:'no-store'});if(!r.ok)throw Error('Não carregou');const data=await r.json();apply(data.content)}catch(e){console.warn('Site config:',e)}}
 async function updateAvatar(){try{const r=await fetch('/api/roblox-avatar?refresh='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('avatar indisponível');const a=await r.json();if(a.full){$('#avatarFull').src=a.full;$('#avatarFull').alt='Avatar Roblox atualizado do perfil '+a.id}if(a.head)$('#avatarHead').src=a.head}catch(e){console.warn('Roblox avatar:',e.message)}}
 let observer;function observe(){if(!('IntersectionObserver'in window)){$$('.reveal').forEach(x=>x.classList.add('visible'));return}if(!observer)observer=new IntersectionObserver(entries=>{for(const e of entries){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}},{threshold:.08,rootMargin:'0px 0px -25px 0px'});$$('.reveal:not(.visible)').forEach(x=>observer.observe(x))}
