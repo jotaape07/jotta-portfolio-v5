@@ -51,7 +51,7 @@ function renderJottaClub(){
   const amount=el('div','j3-vip-amount');amount.append(el('strong','',money(item.monthly)),el('span','',' / mês'));card.append(amount);
   const discount=el('div','j3-discount');discount.append(el('strong','',String(item.discount)+'% OFF'),el('span','','em 1 encomenda / mês · até '+money(item.cap)));card.append(discount);
   const perks=el('ul','j3-perks');(item.perks||[]).forEach(perk=>perks.append(el('li','',perk)));card.append(perks);
-  const a=el('a','j3-vip-cta','CONSULTAR ASSINATURA ↗');a.href='#contact';card.append(a);v.append(card);
+  const a=el('a','j3-vip-cta','CONHECER ASSINATURA ↗');a.href='/club.html';card.append(a);v.append(card);
  });
  const booster=config.booster||{};txt('#j3BoosterText','Boosters do servidor recebem '+(booster.discount||10)+'% de desconto em 1 serviço elegível por ciclo, limitado a '+money(booster.cap||40)+'. Não acumula com VIP.');
  const perks=$('#j3BoosterPerks');perks.replaceChildren();(booster.perks||[]).forEach(p=>perks.append(el('li','',p)));

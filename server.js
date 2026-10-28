@@ -124,5 +124,6 @@ app.post('/api/admin/media',requireAuth,upload.single('media'),async(req,res)=>{
  res.status(201).json({item})
  }catch(e){console.error(e);res.status(500).json({error:'Falha no upload. Verifique as configurações.'})}});
 app.delete('/api/admin/media/:id',requireAuth,async(req,res)=>{try{const all=await allMedia(),item=all.find(x=>x.id===req.params.id);if(!item)return res.status(404).json({error:'Mídia não encontrada'});if(CLOUD)await cloudinary.uploader.destroy(item.id,{resource_type:item.type,invalidate:true});else{await writeFile(DB,all.filter(x=>x.id!==item.id));await fs.unlink(path.join(UPLOADS,path.basename(item.url))).catch(()=>{})}res.json({ok:true})}catch(e){console.error(e);res.status(500).json({error:'Falha ao excluir mídia'})}});
+require('./vip-checkout')(app,{readSite});
 app.use((err,req,res,next)=>{if(err instanceof multer.MulterError)return res.status(413).json({error:'Arquivo excedeu o limite de 80 MB.'});console.error(err);res.status(500).json({error:'Erro interno'})});
 app.listen(process.env.PORT||3000,()=>console.log(`JOTTA V5 na porta ${process.env.PORT||3000} | mídia ${CLOUD?'Cloudinary':'local'} | conteúdo ${SUPA?'Supabase':'local'}`));
