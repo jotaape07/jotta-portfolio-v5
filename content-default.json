@@ -1,0 +1,143 @@
+{
+  "brand": "JOTTA",
+  "accent": "yellow",
+  "intro": {
+    "overline": "A NEW LEVEL OF CREATION",
+    "line": "BUILT DIFFERENT.",
+    "note": "GAME DEV  /  SCRIPTING  /  CREATIVE SYSTEMS",
+    "background": "assets/01_abertura_red_studio.jpg"
+  },
+  "hero": {
+    "eyebrow": "LEAD DEVELOPER  /  ROBLOX CREATOR",
+    "line1": "BEYOND",
+    "line2": "THE CODE.",
+    "description": "Transformo ideias em mundos, interfaces e sistemas que têm identidade própria.",
+    "background": "assets/02_capa_yellow_tech.jpg",
+    "avatar": true
+  },
+  "about": {
+    "kicker": "QUEM ESTÁ POR TRÁS",
+    "title": "CRIANDO O QUE AINDA NÃO EXISTE.",
+    "description": "Sou Jotta, desenvolvedor focado em experiências no Roblox, scripting, interfaces e sistemas. Gosto de transformar conceitos em projetos que as pessoas realmente possam explorar.",
+    "image": "assets/04_projeto_cacadores.jpg"
+  },
+  "links": {
+    "roblox": "https://www.roblox.com/pt/users/1729771980/profile",
+    "discord": "",
+    "github": "https://github.com/jotaape07",
+    "contact": "",
+    "game": "https://www.roblox.com/pt/games/87519362651583/"
+  },
+  "projects": [
+    {
+      "id": "hunters",
+      "number": "01",
+      "category": "HORROR EXPERIENCE",
+      "name": "CAÇADORES DE LENDAS",
+      "subtitle": "O RETORNO",
+      "description": "Um universo sombrio com lendas, exploração, NPCs e sistemas originais.",
+      "image": "assets/04_projeto_cacadores.jpg",
+      "fallback": "assets/forest-poster.svg",
+      "link": "https://www.roblox.com/pt/games/87519362651583/",
+      "active": true
+    },
+    {
+      "id": "eb",
+      "number": "02",
+      "category": "ROBLOX WORLD / ROLEPLAY",
+      "name": "EB DO FOFEX",
+      "subtitle": "SYSTEMS & WORLDS",
+      "description": "Mundo com equipes, progressão, economia e sistemas para jogadores.",
+      "image": "assets/05_projeto_eb_fofex.jpg",
+      "fallback": "assets/eb-poster.svg",
+      "link": "",
+      "active": true
+    },
+    {
+      "id": "lab",
+      "number": "03",
+      "category": "SCRIPTS / AUTOMATIONS",
+      "name": "SYSTEMS LAB",
+      "subtitle": "BOTS & INTERFACES",
+      "description": "Painéis, bots e automações feitos para conectar comunidades e experiências.",
+      "image": "assets/06_projeto_systems_lab.jpg",
+      "fallback": "assets/systems-poster.svg",
+      "link": "",
+      "active": true
+    }
+  ],
+  "skills": [
+    {
+      "name": "Luau / Roblox",
+      "category": "Foco principal",
+      "description": "Sistemas e mecânicas"
+    },
+    {
+      "name": "JavaScript",
+      "category": "Aplicações web",
+      "description": "Interfaces e automações"
+    },
+    {
+      "name": "HTML & CSS",
+      "category": "Front-end",
+      "description": "Sites e experiências visuais"
+    },
+    {
+      "name": "Python",
+      "category": "Em evolução",
+      "description": "Scripts e ferramentas"
+    },
+    {
+      "name": "Roblox Studio",
+      "category": "Ferramenta principal",
+      "description": "Criação de jogos"
+    },
+    {
+      "name": "APIs & Bots",
+      "category": "Integrações",
+      "description": "Painéis e serviços"
+    }
+  ],
+  "services": [
+    {
+      "name": "GAME SYSTEMS",
+      "description": "Mecânicas, salvamento, progressão e ferramentas de jogo.",
+      "detail": "Scripting & Luau"
+    },
+    {
+      "name": "UI / UX DESIGN",
+      "description": "HUDs, menus e interfaces com identidade visual.",
+      "detail": "Interfaces interativas"
+    },
+    {
+      "name": "WEB & AUTOMATION",
+      "description": "Portfólios, sites, painéis e bots personalizados.",
+      "detail": "Front-end & Integrações"
+    }
+  ],
+  "gallery": {
+    "title": "WORK IN MOTION",
+    "subtitle": "Registros de sistemas, mapas e experiências.",
+    "highlight": "assets/03_galeria_red_archive.jpg"
+  },
+  "settings": {
+    "showServices": true,
+    "showGallery": true,
+    "showSkills": true,
+    "showAbout": true,
+    "marquee": "GAME DEVELOPMENT  ✳  SCRIPTING  ✳  UI / UX  ✳  CREATIVE SYSTEMS  ✳",
+    "showGames": true
+  },
+  "games": [
+    {
+      "id": "cacadores",
+      "name": "Caçadores de Lendas — O Retorno",
+      "genre": "Terror / Exploração",
+      "status": "Em desenvolvimento",
+      "description": "Explore mistérios, enfrente lendas e descubra os segredos de um mundo sombrio.",
+      "image": "assets/07_jogo_cacadores_retorno.jpg",
+      "link": "https://www.roblox.com/pt/games/87519362651583/",
+      "visible": true
+    }
+  ]
+}
