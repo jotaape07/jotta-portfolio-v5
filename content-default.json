@@ -25,7 +25,7 @@
     "roblox": "https://www.roblox.com/pt/users/1729771980/profile",
     "discord": "xwjoaolk",
     "github": "https://github.com/jotaape07",
-    "contact": "",
+    "contact": "joaopedr414@gmail.com",
     "game": "https://www.roblox.com/pt/games/87519362651583/"
   },
   "projects": [
@@ -127,5 +127,126 @@
       "link": "https://www.roblox.com/pt/games/87519362651583/",
       "visible": true
     }
-  ]
+  ],
+  "pricing": [
+    {
+      "id": "fix",
+      "name": "Correção de bugs",
+      "description": "Correções pontuais de scripts e pequenos ajustes.",
+      "from": 40,
+      "tag": "SUPORTE"
+    },
+    {
+      "id": "small",
+      "name": "Script personalizado",
+      "description": "Função, comando ou mecânica independente para seu jogo.",
+      "from": 70,
+      "tag": "START"
+    },
+    {
+      "id": "basic",
+      "name": "Sistema básico",
+      "description": "Sistemas simples de salvamento, ferramentas e interações.",
+      "from": 150,
+      "tag": "POPULAR"
+    },
+    {
+      "id": "medium",
+      "name": "Sistema intermediário",
+      "description": "Inventário, equipes, garagens ou mecânicas integradas.",
+      "from": 300,
+      "tag": "DESTAQUE"
+    },
+    {
+      "id": "advanced",
+      "name": "Sistema avançado",
+      "description": "Múltiplos módulos, DataStore, interface e testes completos.",
+      "from": 500,
+      "tag": "PREMIUM"
+    },
+    {
+      "id": "ui",
+      "name": "UI / HUD",
+      "description": "Interface com visual próprio e comportamento responsivo.",
+      "from": 120,
+      "tag": "DESIGN"
+    },
+    {
+      "id": "map",
+      "name": "Mapa Roblox",
+      "description": "Ambiente personalizado com composição e iluminação.",
+      "from": 250,
+      "tag": "BUILD"
+    },
+    {
+      "id": "full",
+      "name": "Projeto completo",
+      "description": "Jogo ou plataforma de maior porte, dividido em etapas.",
+      "from": 0,
+      "tag": "SOB MEDIDA"
+    }
+  ],
+  "vipPlans": [
+    {
+      "id": "start",
+      "name": "VIP START",
+      "monthly": 19.9,
+      "discount": 10,
+      "cap": 25,
+      "color": "white",
+      "perks": [
+        "Cargo VIP START no Discord",
+        "Acesso ao canal exclusivo",
+        "Prévia antecipada de novidades"
+      ]
+    },
+    {
+      "id": "plus",
+      "name": "VIP PLUS",
+      "monthly": 39.9,
+      "discount": 15,
+      "cap": 55,
+      "color": "silver",
+      "perks": [
+        "Todos os benefícios START",
+        "Fila preferencial de atendimento",
+        "Participação em enquetes de novos sistemas"
+      ]
+    },
+    {
+      "id": "elite",
+      "name": "VIP ELITE",
+      "monthly": 69.9,
+      "discount": 20,
+      "cap": 100,
+      "color": "red",
+      "perks": [
+        "Todos os benefícios PLUS",
+        "Acesso antecipado a demonstrações",
+        "Uma análise breve de ideia por mês"
+      ]
+    },
+    {
+      "id": "prime",
+      "name": "VIP PRIME",
+      "monthly": 99.9,
+      "discount": 25,
+      "cap": 160,
+      "color": "gold",
+      "perks": [
+        "Todos os benefícios ELITE",
+        "Prioridade máxima na fila de tickets",
+        "Votações exclusivas para futuros projetos"
+      ]
+    }
+  ],
+  "booster": {
+    "discount": 10,
+    "cap": 40,
+    "perks": [
+      "Cargo Booster exclusivo",
+      "Acesso ao canal de bastidores",
+      "Acesso antecipado a novidades"
+    ]
+  }
 }

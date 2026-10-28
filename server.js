@@ -32,11 +32,36 @@ function extLink(v){const s=clean(v,1000);return /^https:\/\//i.test(s)?s:''}
 function normalize(doc){const d=clone(DEFAULT),c=doc&&typeof doc==='object'&&!Array.isArray(doc)?doc:{};
  d.accent=c.accent==='red'?'red':'yellow';d.brand=clean(c.brand||d.brand,32);
  for(const field of ['intro','hero','about','gallery']){const obj=c[field]||{};for(const key in d[field]){if(typeof d[field][key]==='string')d[field][key]=key.toLowerCase().includes('background')||key==='image'||key==='highlight'?url(obj[key]??d[field][key]):clean(obj[key]??d[field][key],key==='description'?700:160);else if(typeof d[field][key]==='boolean')d[field][key]=Boolean(obj[key]??d[field][key])}}
- for(const key in d.links)d.links[key]=key==='discord'?(extLink(c.links?.[key]??d.links[key])||clean(c.links?.[key]??d.links[key],80).replace(/^@/,'')):extLink(c.links?.[key]??d.links[key]);
+ for(const key in d.links){
+  const v=c.links?.[key]??d.links[key];
+  if(key==='discord')d.links[key]=extLink(v)||clean(v,80).replace(/^@/,'');
+  else if(key==='contact'){const value=clean(v,120);d.links[key]=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?value:extLink(value);}
+  else d.links[key]=extLink(v);
+ }
  d.projects=d.projects.map((p,i)=>{const v=c.projects?.find?.(x=>x.id===p.id)||c.projects?.[i]||{};return {...p,name:clean(v.name??p.name,70),subtitle:clean(v.subtitle??p.subtitle,80),description:clean(v.description??p.description,360),category:clean(v.category??p.category,50),image:url(v.image??p.image),link:extLink(v.link??p.link),active:v.active===undefined?p.active:Boolean(v.active)}});
  if(Array.isArray(c.games))d.games=c.games.slice(0,60).filter(v=>v&&typeof v==='object').map((v,i)=>({id:clean(v.id||('game-'+i),60)||('game-'+i),name:clean(v.name||'Novo jogo',90),genre:clean(v.genre||'Roblox Experience',55),status:clean(v.status||'Em desenvolvimento',42),description:clean(v.description,360),image:url(v.image),link:extLink(v.link),visible:v.visible!==false}));
  if(Array.isArray(c.skills))d.skills=d.skills.map((s,i)=>({...s,...Object.fromEntries(['name','category','description'].map(k=>[k,clean(c.skills?.[i]?.[k]??s[k],120)]))}));
  if(Array.isArray(c.services))d.services=d.services.map((s,i)=>({...s,...Object.fromEntries(['name','description','detail'].map(k=>[k,clean(c.services?.[i]?.[k]??s[k],240)]))}));
+ // Catálogo editável com preços e planos VIP limitados e saneados.
+ const catalog=Array.isArray(c.pricing)?c.pricing:[];
+ d.pricing=DEFAULT.pricing.map((item,i)=>{const v=catalog.find(x=>x?.id===item.id)||catalog[i]||{};const n=Number(v.from??item.from);
+  return {id:item.id,name:clean(v.name??item.name,70),description:clean(v.description??item.description,220),tag:clean(v.tag??item.tag,30),from:Number.isFinite(n)?Math.min(100000,Math.max(0,Math.round(n*100)/100)):item.from};
+ });
+ const plans=Array.isArray(c.vipPlans)?c.vipPlans:[];
+ d.vipPlans=DEFAULT.vipPlans.map((item,i)=>{const v=plans.find(x=>x?.id===item.id)||plans[i]||{};
+  const monthly=Number(v.monthly??item.monthly),discount=Number(v.discount??item.discount),cap=Number(v.cap??item.cap);
+  const perks=Array.isArray(v.perks)?v.perks:item.perks;
+  return {id:item.id,name:clean(v.name??item.name,40),color:item.color,
+   monthly:Number.isFinite(monthly)?Math.min(1000,Math.max(0,Math.round(monthly*100)/100)):item.monthly,
+   discount:Number.isFinite(discount)?Math.min(35,Math.max(0,Math.round(discount))):item.discount,
+   cap:Number.isFinite(cap)?Math.min(500,Math.max(0,Math.round(cap))):item.cap,
+   perks:perks.slice(0,5).map(p=>clean(p,110)).filter(Boolean)};
+ });
+ const boost=c.booster||{};const bp=Array.isArray(boost.perks)?boost.perks:DEFAULT.booster.perks;
+ const bd=Number(boost.discount??DEFAULT.booster.discount),bc=Number(boost.cap??DEFAULT.booster.cap);
+ d.booster={discount:Number.isFinite(bd)?Math.min(25,Math.max(0,Math.round(bd))):DEFAULT.booster.discount,
+ cap:Number.isFinite(bc)?Math.min(200,Math.max(0,Math.round(bc))):DEFAULT.booster.cap,
+ perks:bp.slice(0,5).map(x=>clean(x,110)).filter(Boolean)};
  for(const k in d.settings){if(typeof d.settings[k]==='boolean')d.settings[k]=Boolean(c.settings?.[k]??d.settings[k]);else d.settings[k]=clean(c.settings?.[k]??d.settings[k],220)}return d;
 }
 async function localFile(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'))}catch{return clone(fallback)}}

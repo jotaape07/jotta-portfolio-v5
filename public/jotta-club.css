@@ -1,0 +1,57 @@
+/* JOTTA STUDIOS CLUB / EPISODE 03 — red, ivory, graphite */
+.j3-pricing,.j3-vip{position:relative;isolation:isolate;background:#0c0e10;color:#f1f1ed;overflow:hidden;padding-top:clamp(90px,10vw,150px);padding-bottom:clamp(80px,9vw,140px);border-top:1px solid #292c30}
+.j3-vip{background:linear-gradient(135deg,#100f11,#170e12 55%,#0d0c10)}
+.j3-red-glow{position:absolute;pointer-events:none;z-index:-1;inset:0;background:radial-gradient(circle at 90% 7%,rgba(236,51,62,.18),transparent 41%)}
+.j3-section-head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:50px}
+.j3-overline{display:block;font:700 10px/1.4 'Space Mono',monospace;color:#ff7d78;letter-spacing:.13em;margin-bottom:22px}
+.j3-section-head h2{margin:0;font:900 clamp(64px,8vw,128px)/.83 'Barlow Condensed',Impact,sans-serif;letter-spacing:-.025em}
+.j3-section-head h2 em{font-style:normal;color:#f25342}
+.j3-section-head>p{margin:0;max-width:370px;font:500 13px/1.9 'DM Sans',sans-serif;color:#a2a9ac}
+.j3-statusline{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #303438;border-bottom:1px solid #303438;padding:15px 0;margin-bottom:16px;gap:14px;color:#b7bdbe;font:700 10px 'Space Mono',monospace;letter-spacing:.12em}
+.j3-price-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.j3-price-card{min-height:288px;display:flex;flex-direction:column;background:linear-gradient(145deg,#1b1e22,#111315);border:1px solid #303438;padding:24px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.j3-price-card:hover,.j3-vip-card:hover{transform:translateY(-5px);border-color:#d34a44;box-shadow:0 16px 48px #0008}
+.j3-highlight{border-color:#bc4944;background:linear-gradient(140deg,#28171a,#161316 60%)}
+.j3-price-top,.j3-vip-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font:700 9px 'Space Mono',monospace;letter-spacing:.09em;color:#a4a9ac}
+.j3-price-label{border:1px solid #844038;padding:6px 8px;color:#f69487}
+.j3-price-card h3{font:900 clamp(26px,2.7vw,38px)/1.02 'Barlow Condensed',Impact,sans-serif;text-transform:uppercase;letter-spacing:.015em;margin:29px 0 12px}
+.j3-price-description{font:400 12px/1.7 'DM Sans',sans-serif;color:#a0a7ab;margin:0 0 26px;min-height:45px}
+.j3-price-value{margin-top:auto;border-top:1px solid #383b3e;padding-top:16px;display:flex;flex-direction:column;gap:4px}
+.j3-price-value small{font:700 10px 'Space Mono',monospace;color:#a2aaac;letter-spacing:.14em}
+.j3-price-value strong{font:900 clamp(28px,3vw,42px) 'Barlow Condensed',Impact,sans-serif}
+.j3-cta{margin-top:14px;display:block;background:#ef5b4d;color:#111;padding:14px 12px;text-align:center;font:800 10px 'Space Mono',monospace}
+.j3-cta:hover,.j3-vip-cta:hover{background:#fff;color:#111}
+.j3-pricing-after{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:23px;font:600 11px/1.8 'DM Sans',sans-serif;color:#a6b0b1}
+.j3-pricing-after a{font:700 11px 'Space Mono',monospace;color:#f58a80;white-space:nowrap}
+.j3-vip-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.j3-vip-card{position:relative;display:flex;flex-direction:column;background:linear-gradient(150deg,#1d1c21,#121315 70%);border:1px solid #404045;padding:27px 22px 23px;min-height:405px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.j3-vip-card.j3-vip-red{border-color:#9b4241;background:linear-gradient(155deg,#391b21,#141217 70%)}
+.j3-vip-card.j3-vip-gold{border-color:#b3925f;background:linear-gradient(155deg,#372c1f,#161419 67%)}
+.j3-vip-recommended:before{content:"PRIME MEMBER";position:absolute;top:-11px;right:12px;background:#d3a261;color:#140f0c;padding:6px 10px;font:800 9px 'Space Mono',monospace;letter-spacing:.05em}
+.j3-vip-symbol{font-size:18px;color:#f36459}
+.j3-vip-gold .j3-vip-symbol{color:#dfb971}
+.j3-vip-card h3{font:900 34px 'Barlow Condensed',Impact,sans-serif;margin:24px 0 5px;letter-spacing:.02em}
+.j3-vip-amount{display:flex;align-items:baseline;gap:5px;margin:0 0 18px}
+.j3-vip-amount strong{font:900 clamp(32px,3vw,44px) 'Barlow Condensed',Impact,sans-serif}
+.j3-vip-amount span{font:500 11px 'DM Sans',sans-serif;color:#b5b7b8}
+.j3-discount{display:flex;flex-direction:column;gap:5px;border-top:1px solid #474042;border-bottom:1px solid #474042;padding:14px 0}
+.j3-discount strong{font:900 27px 'Barlow Condensed',Impact,sans-serif;color:#fa8074}
+.j3-discount span{font:500 11px/1.5 'DM Sans',sans-serif;color:#c3b8ba}
+.j3-perks,.j3-booster-panel ul{padding:0;margin:22px 0;list-style:none;display:grid;gap:11px}
+.j3-perks li,.j3-booster-panel li{position:relative;padding-left:19px;font:500 12px/1.55 'DM Sans',sans-serif;color:#c7c6c8}
+.j3-perks li:before,.j3-booster-panel li:before{content:"✦";color:#f7786b;position:absolute;left:0}
+.j3-vip-cta{display:block;margin-top:auto;padding:15px 8px;background:#ec574c;text-align:center;font:800 10px 'Space Mono',monospace;color:#131214}
+.j3-vip-gold .j3-vip-cta{background:#d7ae73}
+.j3-booster-panel{display:flex;align-items:center;gap:24px;padding:29px 32px;margin-top:27px;background:linear-gradient(105deg,#212025,#141116 70%);border:1px solid #6e3436}
+.j3-booster-emblem{flex:none;width:78px;height:78px;display:grid;place-items:center;border:1px solid #a04c4b;font-size:40px;color:#e97062}
+.j3-booster-copy{flex:1}
+.j3-booster-copy .j3-overline{margin:0 0 7px}
+.j3-booster-copy h3{font:900 clamp(27px,3vw,37px) 'Barlow Condensed',Impact,sans-serif;margin:0 0 5px}
+.j3-booster-copy p{font:500 12px/1.6 'DM Sans',sans-serif;color:#bbb5b9;margin:0}
+.j3-booster-panel ul{display:flex;gap:12px 22px;flex-wrap:wrap;margin:10px 0 0}
+.j3-booster-panel>a{display:inline-block;flex:none;border:1px solid #d7544b;padding:16px 18px;color:#fff;font:700 10px 'Space Mono',monospace}
+.j3-booster-panel>a:hover{background:#e85247;color:#111}
+.j3-vip-terms{font:500 11px/1.85 'DM Sans',sans-serif;color:#989598;max-width:1080px;margin:30px 0 0}
+@media(max-width:1200px){.j3-price-grid,.j3-vip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.j3-section-head{display:block}.j3-section-head>p{margin-top:26px}.j3-price-grid,.j3-vip-grid{grid-template-columns:1fr}.j3-vip-card{min-height:350px}.j3-section-head h2{font-size:clamp(58px,13vw,85px)}.j3-statusline,.j3-pricing-after{flex-wrap:wrap}.j3-booster-panel{display:block}.j3-booster-copy{margin:20px 0}.j3-booster-panel>a{display:block;text-align:center}}
+@media(prefers-reduced-motion:reduce){.j3-price-card,.j3-vip-card{transition:none}.j3-price-card:hover,.j3-vip-card:hover{transform:none}}
