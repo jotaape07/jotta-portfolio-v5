@@ -1,24 +1,24 @@
 {
   "brand": "JOTTA",
-  "accent": "yellow",
+  "accent": "red",
   "intro": {
-    "overline": "A NEW LEVEL OF CREATION",
-    "line": "BUILT DIFFERENT.",
-    "note": "GAME DEV  /  SCRIPTING  /  CREATIVE SYSTEMS",
+    "overline": "JOTTA STUDIO / INDEPENDENT DEVELOPMENT",
+    "line": "MADE TO STAND OUT.",
+    "note": "LUАU  /  ROBLOX STUDIO  /  DESIGN  /  DEVELOPMENT",
     "background": "assets/01_abertura_red_studio.jpg"
   },
   "hero": {
-    "eyebrow": "LEAD DEVELOPER  /  ROBLOX CREATOR",
-    "line1": "BEYOND",
-    "line2": "THE CODE.",
-    "description": "Transformo ideias em mundos, interfaces e sistemas que têm identidade própria.",
+    "eyebrow": "JOTTA / LEAD DEVELOPER & SCRIPTER",
+    "line1": "BUILDING",
+    "line2": "THE FUTURE.",
+    "description": "Experiências que marcam. Sistemas que funcionam. Ideias que se tornam jogos e projetos reais.",
     "background": "assets/02_capa_yellow_tech.jpg",
     "avatar": true
   },
   "about": {
     "kicker": "QUEM ESTÁ POR TRÁS",
-    "title": "CRIANDO O QUE AINDA NÃO EXISTE.",
-    "description": "Sou Jotta, desenvolvedor focado em experiências no Roblox, scripting, interfaces e sistemas. Gosto de transformar conceitos em projetos que as pessoas realmente possam explorar.",
+    "title": "IDEIAS VIRAM EXPERIÊNCIAS.",
+    "description": "Sou Jotta, desenvolvedor e scripter com foco em Roblox, interfaces e sistemas. Transformo ideias em experiências interativas — da primeira linha de código ao lançamento.",
     "image": "assets/04_projeto_cacadores.jpg"
   },
   "links": {
@@ -35,31 +35,19 @@
       "category": "HORROR EXPERIENCE",
       "name": "CAÇADORES DE LENDAS",
       "subtitle": "O RETORNO",
-      "description": "Um universo sombrio com lendas, exploração, NPCs e sistemas originais.",
+      "description": "Terror, exploração e lendas em uma experiência Roblox R6. Uma produção autoral focada em ambientação, sistemas e investigação.",
       "image": "assets/04_projeto_cacadores.jpg",
       "fallback": "assets/forest-poster.svg",
       "link": "https://www.roblox.com/pt/games/87519362651583/",
       "active": true
     },
     {
-      "id": "eb",
-      "number": "02",
-      "category": "ROBLOX WORLD / ROLEPLAY",
-      "name": "EB DO FOFEX",
-      "subtitle": "SYSTEMS & WORLDS",
-      "description": "Mundo com equipes, progressão, economia e sistemas para jogadores.",
-      "image": "assets/05_projeto_eb_fofex.jpg",
-      "fallback": "assets/eb-poster.svg",
-      "link": "",
-      "active": true
-    },
-    {
       "id": "lab",
-      "number": "03",
+      "number": "02",
       "category": "SCRIPTS / AUTOMATIONS",
       "name": "SYSTEMS LAB",
       "subtitle": "BOTS & INTERFACES",
-      "description": "Painéis, bots e automações feitos para conectar comunidades e experiências.",
+      "description": "Experimentos e soluções em scripting, bots, interfaces e automação: tecnologia aplicada a problemas reais.",
       "image": "assets/06_projeto_systems_lab.jpg",
       "fallback": "assets/systems-poster.svg",
       "link": "",
@@ -116,8 +104,8 @@
     }
   ],
   "gallery": {
-    "title": "WORK IN MOTION",
-    "subtitle": "Registros de sistemas, mapas e experiências.",
+    "title": "INSIDE THE STUDIO",
+    "subtitle": "Artes conceituais e registros dos projetos em desenvolvimento.",
     "highlight": "assets/03_galeria_red_archive.jpg"
   },
   "settings": {
@@ -125,7 +113,7 @@
     "showGallery": true,
     "showSkills": true,
     "showAbout": true,
-    "marquee": "GAME DEVELOPMENT  ✳  SCRIPTING  ✳  UI / UX  ✳  CREATIVE SYSTEMS  ✳",
+    "marquee": "JOTTA STUDIO ✳ ROBLOX DEVELOPMENT ✳ LUAU SCRIPTING ✳ UI / UX ✳ SYSTEMS LAB ✳",
     "showGames": true
   },
   "games": [
