@@ -5,7 +5,8 @@ const {v2:cloudinary}=require('cloudinary');
 const app=express(), ROOT=__dirname, PUB=path.join(ROOT,'public'), UPLOADS=path.join(ROOT,'data','uploads'), DB=path.join(ROOT,'data','media.json'), SITE_DB=path.join(ROOT,'data','site.json');
 const DEFAULT=require('./content-default.json');
 const CLOUD=Boolean(process.env.CLOUDINARY_CLOUD_NAME&&process.env.CLOUDINARY_API_KEY&&process.env.CLOUDINARY_API_SECRET);
-const SUPA=Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_SERVICE_ROLE_KEY);
+const SUPA_KEY=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||'';
+const SUPA=Boolean(process.env.SUPABASE_URL&&SUPA_KEY);
 const PASS=process.env.ADMIN_PASSWORD||'';
 const SECRET=process.env.SESSION_SECRET||crypto.randomBytes(32).toString('hex');
 const PROD=process.env.NODE_ENV==='production';
@@ -67,7 +68,16 @@ function normalize(doc){const d=clone(DEFAULT),c=doc&&typeof doc==='object'&&!Ar
 }
 async function localFile(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'))}catch{return clone(fallback)}}
 async function writeFile(file,obj){await fs.mkdir(path.dirname(file),{recursive:true});const temp=file+'.tmp-'+process.pid;await fs.writeFile(temp,JSON.stringify(obj,null,2));await fs.rename(temp,file)}
-async function supa(pathname,method='GET',body){const base=process.env.SUPABASE_URL.replace(/\/$/,'');const r=await fetch(`${base}/rest/v1/${pathname}`,{method,headers:{'apikey':process.env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},...(body?{body:JSON.stringify(body)}:{}) ,signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Banco de dados indisponível: '+r.status);return r.json()}
+async function supa(pathname,method='GET',body){
+ const base=process.env.SUPABASE_URL.replace(/\/$/,'');
+ const headers={'apikey':SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'};
+ // New sb_secret keys belong ONLY in apikey. Legacy service_role is JWT and also uses Authorization.
+ if(!SUPA_KEY.startsWith('sb_secret_'))headers.Authorization='Bearer '+SUPA_KEY;
+ const r=await fetch(`${base}/rest/v1/${pathname}`,{method,headers,
+  ...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(12000)});
+ if(!r.ok)throw Error('Banco de dados indisponível: '+r.status);
+ return r.json();
+}
 async function readSite(){if(!SUPA)return normalize(await localFile(SITE_DB,DEFAULT));const rows=await supa('site_config?select=content&id=eq.main&limit=1');return normalize(rows[0]?.content||DEFAULT)}
 async function saveSite(obj){const doc=normalize(obj);if(SUPA)await supa('site_config?on_conflict=id','POST',[{id:'main',content:doc,updated_at:new Date().toISOString()}]);else await writeFile(SITE_DB,doc);return doc}
 

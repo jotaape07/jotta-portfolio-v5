@@ -13,7 +13,7 @@ const fail=(message,status=500)=>Object.assign(new Error(message),{status});
 const clean=(v,max=160)=>String(v||'').trim().slice(0,max);
 function setup(){
  return {oauth:!!(process.env.DISCORD_CLIENT_ID&&process.env.DISCORD_CLIENT_SECRET&&process.env.SESSION_SECRET),
- database:!!(process.env.SUPABASE_URL&&process.env.SUPABASE_SERVICE_ROLE_KEY),
+ database:!!(process.env.SUPABASE_URL&&(process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY)),
  discord:!!process.env.DISCORD_BOT_TOKEN,
  enabled:process.env.NUBANK_MANUAL_ENABLED==='true'};
 }
@@ -56,8 +56,9 @@ function sendError(res,e){
 }
 async function db(path,method='GET',body,prefer){
  if(!setup().database)throw fail('Armazenamento de assinaturas ainda não configurado.',503);
- const headers={apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,
-  Authorization:'Bearer '+process.env.SUPABASE_SERVICE_ROLE_KEY,Accept:'application/json'};
+ const secret=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
+ const headers={apikey:secret,Accept:'application/json'};
+ if(!secret.startsWith('sb_secret_'))headers.Authorization='Bearer '+secret;
  if(body!==undefined)headers['Content-Type']='application/json';
  if(prefer)headers.Prefer=prefer;
  const response=await fetch(process.env.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/'+path,{
@@ -229,7 +230,7 @@ module.exports=function mountNubankVip(app,{readSite,requireAuth}){
  app.get('/api/admin/vip/readiness',requireAuth,async(req,res)=>{
   const flags=setup();
   const checks={
-   database:{ready:false,detail:flags.database?'Verificando tabelas persistentes...':'Configure SUPABASE_URL e a service_role no Render e execute nubank-vip.sql.'},
+   database:{ready:false,detail:flags.database?'Verificando tabelas persistentes...':'Configure SUPABASE_URL e SUPABASE_SECRET_KEY no Render e execute nubank-vip.sql.'},
    oauth:{ready:flags.oauth,detail:flags.oauth?'Credenciais OAuth2 presentes (teste o login do cliente).':'Configure Discord Client ID, Client Secret e Session Secret.'},
    bot:{ready:false,detail:flags.discord?'Verificando acesso do bot ao Discord...':'Configure DISCORD_BOT_TOKEN no Render.'},
    enabled:{ready:flags.enabled,detail:flags.enabled?'Env NUBANK_MANUAL_ENABLED ativada.':'Compras fechadas; ative somente após testar o fluxo com responsáveis.'}

@@ -1,17 +1,19 @@
 # JOTTA STUDIOS — CONTROL ROOM V10
 ## Checklist para receber os primeiros pedidos reais pelo Pix Nubank
 
-Status atual confirmado pelos logs do Render: **armazenamento local**. O banco Supabase ainda precisa ser configurado antes de habilitar compras. O painel foi redesenhado, mas não é seguro abrir pedidos pagos sem persistência.
+Os pedidos reais só devem ser habilitados depois de conectar um banco persistente e testar os fluxos. Os dados do painel podem ainda estar em armazenamento local. O painel foi redesenhado, mas não é seguro abrir pedidos pagos sem persistência.
 
 ### A) Banco de dados (obrigatório)
+**ANTES DE ATIVAR O SUPABASE:** abra o painel atual do site, vá em **VISÃO GERAL > BAIXAR BACKUP JSON** e guarde a cópia. Após ativar o banco, importe esse backup pelo painel e clique em **PUBLICAR ALTERAÇÕES**. A troca do armazenamento local para o Supabase não migra automaticamente as edições locais.
 1. Entre no projeto Supabase que será administrado por você e seus responsáveis.
 2. Abra **SQL Editor** e execute o arquivo `nubank-vip.sql` do repositório.
 3. Em Render → serviço `jotta-portfolio-v5` → Environment, coloque duas variáveis **privadas**:
    - `SUPABASE_URL` = URL do projeto Supabase
-   - `SUPABASE_SERVICE_ROLE_KEY` = chave de serviço privada do Supabase
+   - `SUPABASE_SECRET_KEY` = nova chave secreta privada do Supabase (`sb_secret_...`), preferível à antiga `service_role`
+   - Compatibilidade: `SUPABASE_SERVICE_ROLE_KEY` continua aceito para projetos que só possuem a chave legada.
 4. Salve e confira em **/admin → VISÃO GERAL → PRONTO PARA VENDER?** se o banco foi reconhecido.
 
-**Nunca cole essas chaves no GitHub, no Discord, nos arquivos públicos do site ou nesta conversa.** Elas têm permissões elevadas sobre o banco.
+**Nunca cole essas chaves no GitHub, no Discord, nos arquivos públicos do site ou nesta conversa.** O sistema usa a chave apenas no servidor Render; a chave nova `sb_secret_` é enviada somente no cabeçalho `apikey`. Elas têm permissões elevadas sobre o banco.
 
 ### B) Login com Discord (obrigatório)
 1. No Discord Developer Portal, abra o aplicativo do bot do JOTTA STUDIOS.

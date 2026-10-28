@@ -1,6 +1,18 @@
 -- JOTTA STUDIOS — PIX NUBANK MANUAL
 -- Execute no SQL Editor do Supabase com seus responsáveis.
 -- Não armazena comprovante, CPF, nome do pagador ou dados bancários.
+-- Conteúdo público do portfólio, migrado para banco persistente.
+-- IMPORTANTE: exporte o backup JSON do painel ANTES de configurar o Supabase,
+-- depois importe e publique o backup para preservar alterações.
+create table if not exists public.site_config (
+ id text primary key,
+ content jsonb not null,
+ updated_at timestamptz not null default now()
+);
+alter table public.site_config enable row level security;
+revoke all on public.site_config from anon,authenticated;
+grant all on public.site_config to service_role;
+
 create table if not exists public.vip_memberships (
  discord_user_id text primary key check (discord_user_id ~ '^[0-9]{16,22}$'),
  plan_id text not null check(plan_id in ('start','plus','elite','prime')),
