@@ -225,6 +225,50 @@ module.exports=function mountNubankVip(app,{readSite,requireAuth}){
   res.json({order:publicOrder(updated[0])});
  }catch(e){sendError(res,e)}});
 
+ // Configuração técnica sem expor tokens, chaves, nomes de compradores ou credenciais.
+ app.get('/api/admin/vip/readiness',requireAuth,async(req,res)=>{
+  const flags=setup();
+  const checks={
+   database:{ready:false,detail:flags.database?'Verificando tabelas persistentes...':'Configure SUPABASE_URL e a service_role no Render e execute nubank-vip.sql.'},
+   oauth:{ready:flags.oauth,detail:flags.oauth?'Credenciais OAuth2 presentes (teste o login do cliente).':'Configure Discord Client ID, Client Secret e Session Secret.'},
+   bot:{ready:false,detail:flags.discord?'Verificando acesso do bot ao Discord...':'Configure DISCORD_BOT_TOKEN no Render.'},
+   enabled:{ready:flags.enabled,detail:flags.enabled?'Env NUBANK_MANUAL_ENABLED ativada.':'Compras fechadas; ative somente após testar o fluxo com responsáveis.'}
+  };
+  let activeVipCount=null;
+  if(flags.database){
+   try{
+    await Promise.all([
+     db('vip_manual_orders?select=id&limit=1'),
+     db('vip_memberships?select=discord_user_id&limit=1')
+    ]);
+    checks.database={ready:true,detail:'Tabelas vip_manual_orders e vip_memberships acessíveis no Supabase.'};
+    const members=await db('vip_memberships?valid_until=gt.'+
+     encodeURIComponent(new Date().toISOString())+'&select=discord_user_id&limit=1000');
+    activeVipCount=members.length;
+   }catch{
+    checks.database={ready:false,detail:'Tabelas ainda não acessíveis. Execute nubank-vip.sql e confira as credenciais.'};
+   }
+  }
+  if(flags.discord){
+   try{
+    const bot=await discord('/users/@me');
+    const roles=await discord('/guilds/'+GUILD+'/roles');
+    if(bot?.id&&Array.isArray(roles)){
+     checks.bot={ready:true,detail:'Bot autenticado e conectado ao servidor. Teste a hierarquia e a entrega de cargos.'};
+    }else{
+     checks.bot={ready:false,detail:'O bot não confirmou conexão válida com o servidor.'};
+    }
+   }catch{
+    checks.bot={ready:false,detail:'Bot não respondeu ou não acessa o servidor. Confira token e permissões.'};
+   }
+  }
+  const readyForOrders=Object.values(checks).every(check=>check.ready);
+  res.set('Cache-Control','no-store').json({
+   mode:'nubank-manual',readyForOrders,checks,activeVipCount,
+   notice:'Pix sem verificação automática pelo Nubank. Aprovação apenas após conferência humana.',
+   expirySweep:'Configure um cron externo protegido para revogar cargos expirados.'
+  });
+ });
  app.get('/api/admin/vip/orders',requireAuth,async(req,res)=>{try{
   if(!setup().database)throw fail('Configure o Supabase antes de analisar pedidos.',503);
   const rows=await db('vip_manual_orders?select=*&order=created_at.desc&limit=100');

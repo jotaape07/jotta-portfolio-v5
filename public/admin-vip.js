@@ -1,135 +1,287 @@
+/* JOTTA STUDIOS — CONTROL ROOM V10
+ * Premium interface for real Nubank payment orders, no fabricated data.
+ * Approval always requires human bank verification and one unique Nubank reference.
+ */
 (()=>{'use strict';
 const $=s=>document.querySelector(s);
-const el=(tag,klass,text)=>{const x=document.createElement(tag);if(klass)x.className=klass;if(text!==undefined)x.textContent=text;return x};
-const STATUS={awaiting_payment:'AGUARDANDO PIX',awaiting_review:'CONFERIR NO NUBANK',approved:'APROVADO',rejected:'REJEITADO',cancelled:'CANCELADO'};
+const $$=s=>[...document.querySelectorAll(s)];
+const el=(tag,klass,value)=>{const node=document.createElement(tag);if(klass)node.className=klass;if(value!==undefined)node.textContent=String(value);return node};
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-let busy=false,filter='all',cache=[];
-function message(s){const box=$('#n8AdminStatus');if(box)box.textContent=s}
-async function req(url,opts={}){
- const res=await fetch(url,{cache:'no-store',credentials:'same-origin',...opts});
- let data;try{data=await res.json()}catch{data={}}
- if(!res.ok)throw Error(data.error||'Erro HTTP '+res.status);
+const STATUS={awaiting_review:'CONFERIR NO NUBANK',awaiting_payment:'AGUARDANDO PIX',approved:'APROVADO',rejected:'REJEITADO',cancelled:'CANCELADO'};
+const statusKey=['awaiting_review','awaiting_payment','approved','rejected'];
+let orders=[],ordersLoaded=false,readiness=null,filter='all',search='',sort='priority',busy=false,pendingRequest=false,loadError='';
+let activeCount=null;
+const date=v=>{const d=new Date(v||0);return Number.isFinite(d.getTime())?d.toLocaleString('pt-BR'):'—'};
+const shortDate=v=>{const d=new Date(v||0);return Number.isFinite(d.getTime())?d.toLocaleDateString('pt-BR'):'—'};
+const stamp=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const visible=()=>!!$('#adminApp')&&!$('#adminApp').hidden;
+function tell(value){const node=$('#n8AdminStatus');if(node)node.textContent=value}
+async function request(url,opts={}){
+ const response=await fetch(url,{cache:'no-store',credentials:'same-origin',...opts});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(data.error||'Resposta HTTP '+response.status);
  return data;
 }
-function post(path,body){return req(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})})}
-function addInfo(box,label,value){
- const p=el('p');p.append(el('b','',label+': '),document.createTextNode(String(value??'—')));box.append(p);
-}
-function statusFirst(o){return o.status==='awaiting_review'?0:o.status==='awaiting_payment'?1:o.status==='approved'&&!o.roleSynced?2:o.status==='approved'?3:4}
-function stamp(value){try{return new Date(value).toLocaleString('pt-BR')}catch{return '—'}}
-async function update(){
- if(busy)return;
- const area=$('#n8AdminOrderList');if(!area)return;
- message('Atualizando os pedidos VIP...');
- try{
-  const info=await req('/api/admin/vip/orders');
-  cache=info.orders||[];
-  const counts=info.counts||{};
-  const counted=el('div','n8-admin-count-grid');
-  for(const [key,name] of [['awaiting_review','CONFERIR'],['awaiting_payment','AGUARDANDO PIX'],['approved','APROVADOS'],['rejected','REJEITADOS']]){
-   const chip=el('button','n8-stat-chip'+(filter===key?' active':''),name+' · '+(counts[key]||0));
-   chip.type='button';chip.setAttribute('aria-pressed',String(filter===key));
-   chip.addEventListener('click',()=>{filter=filter===key?'all':key;render()});
-   counted.append(chip);
-  }
-  const all=el('button','n8-stat-chip'+(filter==='all'?' active':''),'TODOS · '+cache.length);
-  all.type='button';all.addEventListener('click',()=>{filter='all';render()});counted.prepend(all);
-  $('#n8AdminCounts').replaceChildren(counted);
-  render();
-  message(cache.length+' pedido(s) encontrados. Aprovar somente após conferir o crédito no aplicativo Nubank.');
- }catch(e){message('Não foi possível carregar: '+e.message);
-  if(!cache.length)area.textContent='Confira a conexão do Supabase e a sessão administrativa.';
+const post=(url,obj)=>request(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj||{})});
+const nav=page=>$('#adminNav button[data-page="'+page+'"]')?.click();
+function setText(selector,value){const node=$(selector);if(node)node.textContent=String(value)}
+function colorStatus(elm,good,warning=false){if(!elm)return;elm.classList.toggle('good',good);elm.classList.toggle('off',!good&&!warning)}
+function readinessCards(container){
+ if(!container)return;
+ container.replaceChildren();
+ if(!readiness){container.textContent='Não foi possível verificar as integrações.';return}
+ const steps=[
+  ['database','BANCO PERSISTENTE','Supabase e tabelas dos pedidos'],
+  ['oauth','LOGIN DISCORD','Identificação do comprador'],
+  ['bot','BOT DISCORD','Token e acesso ao servidor'],
+  ['enabled','LIBERAÇÃO DE VENDAS','Ativação após os testes'],
+ ];
+ for(const [key,title,defaultHint] of steps){
+  const item=readiness.checks?.[key]||{ready:false};
+  const line=el('div','j10-checkitem '+(item.ready?'ok':'no'));
+  line.append(el('span','',item.ready?'✓':'×'));
+  const copy=el('div');
+  copy.append(el('strong','',title),el('small','',item.detail||defaultHint));
+  line.append(copy);container.append(line);
  }
 }
-function render(){
- const area=$('#n8AdminOrderList');if(!area)return;
- area.replaceChildren();
- const list=cache.filter(o=>filter==='all'||o.status===filter).sort((a,b)=>statusFirst(a)-statusFirst(b)||Date.parse(b.createdAt)-Date.parse(a.createdAt));
- if(!list.length){area.append(el('p','n8-admin-empty','Nenhum pedido nessa categoria.'));return}
- list.forEach(o=>area.append(card(o)));
- $$('.n8-stat-chip').forEach(b=>{
-  const name=b.textContent.split(' · ')[0];
-  const active=(name==='TODOS'&&filter==='all')||(name==='CONFERIR'&&filter==='awaiting_review')||(name==='AGUARDANDO PIX'&&filter==='awaiting_payment')||(name==='APROVADOS'&&filter==='approved')||(name==='REJEITADOS'&&filter==='rejected');
-  b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));
- });
+function renderReadiness(){
+ const isLive=Boolean(readiness?.readyForOrders);
+ for(const id of ['#j10ReadyBadge','#j10FinanceState']){
+  const node=$(id);
+  if(!node)continue;
+  node.textContent=isLive?'PEDIDOS HABILITADOS':'VENDAS BLOQUEADAS';
+  colorStatus(node,isLive);
+ }
+ setText('#j10SidebarState',isLive?'CHECKOUT MANUAL ATIVO':'MODO DE PREPARAÇÃO');
+ readinessCards($('#j10LaunchList'));
+ readinessCards($('#j10FinanceReadiness'));
+ activeCount=typeof readiness?.activeVipCount==='number'?readiness.activeVipCount:null;
+ setText('#j10KpiActive',activeCount===null?'—':activeCount);
 }
-function $$(q){return [...document.querySelectorAll(q)]}
-function card(o){
+function kpis(){
+ if(!ordersLoaded){
+  ['#j10KpiPending','#j10KpiApproved','#j10KpiGross','#j10FinanceReview','#j10FinanceAwaiting','#j10FinanceApproved','#j10FinanceGross'].forEach(key=>setText(key,'—'));
+  const bars=$('#j10Bars');if(bars){bars.replaceChildren();bars.append(el('div','j10-chart-empty','DADOS AINDA NÃO DISPONÍVEIS'))}
+  const count=$('#j10NavCount');if(count)count.hidden=true;
+  return;
+ }
+ const all=orders;
+ const approved=all.filter(o=>o.status==='approved');
+ const review=all.filter(o=>o.status==='awaiting_review');
+ const awaiting=all.filter(o=>o.status==='awaiting_payment');
+ const gross=approved.reduce((sum,o)=>sum+Number(o.amount||0),0);
+ setText('#j10KpiPending',review.length);
+ setText('#j10KpiApproved',approved.length);
+ setText('#j10KpiGross',money(gross));
+ setText('#j10FinanceReview',review.length);
+ setText('#j10FinanceAwaiting',awaiting.length);
+ setText('#j10FinanceApproved',approved.length);
+ setText('#j10FinanceGross',money(gross));
+ const badge=$('#j10NavCount');
+ if(badge){badge.textContent=String(review.length);badge.hidden=!review.length}
+ renderChart(approved);
+}
+function renderChart(approved){
+ const root=$('#j10Bars');if(!root)return;
+ root.replaceChildren();
+ const now=new Date(),items=[];
+ for(let i=6;i>=0;i--){
+  const day=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+  const next=new Date(day.getFullYear(),day.getMonth(),day.getDate()+1);
+  const value=approved.reduce((sum,o)=>{
+   const d=new Date(o.createdAt||0);
+   return d>=day&&d<next?sum+Number(o.amount||0):sum;
+  },0);
+  items.push({day,value});
+ }
+ const max=Math.max(0,...items.map(x=>x.value));
+ items.forEach(item=>{
+  const container=el('div','j10-chart-col');
+  const count=el('b','',item.value?money(item.value):'0');
+  count.title='Volume aprovado de pedidos criados em '+shortDate(item.day);
+  const bar=el('div','j10-chart-bar');
+  bar.style.setProperty('--j10-height',max?Math.max(3,100*item.value/max)+'%':'3%');
+  bar.title=count.title;bar.setAttribute('role','img');bar.setAttribute('aria-label',count.title);
+  container.append(count,bar,el('small','',item.day.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','').toUpperCase()));
+  root.append(container);
+ });
+ setText('#j10ChartCaption','Valor aprovado por data de criação do pedido • últimos 100');
+}
+function priority(o){return o.status==='awaiting_review'?0:o.status==='awaiting_payment'?1:o.status==='approved'&&!o.roleSynced?2:o.status==='approved'?3:4}
+function matching(){
+ const q=search.trim().toLowerCase();
+ const base=orders.filter(o=>(filter==='all'||o.status===filter)&&
+  (!q||[o.id,o.discordId,o.buyerReference,o.bankReference,o.planId,o.status]
+   .some(v=>String(v||'').toLowerCase().includes(q))));
+ const cmpNew=(a,b)=>Date.parse(b.createdAt||0)-Date.parse(a.createdAt||0);
+ switch(sort){
+  case 'new':return base.sort(cmpNew);
+  case 'old':return base.sort((a,b)=>-cmpNew(a,b));
+  case 'amount':return base.sort((a,b)=>Number(b.amount)-Number(a.amount)||cmpNew(a,b));
+  default:return base.sort((a,b)=>priority(a)-priority(b)||cmpNew(a,b));
+ }
+}
+function chips(){
+ const div=$('#n8AdminCounts');if(!div)return;
+ div.replaceChildren();const group=el('div','n8-admin-count-grid');
+ const counts={all:orders.length};for(const item of statusKey)counts[item]=orders.filter(x=>x.status===item).length;
+ const tags=[['all','TODOS'],['awaiting_review','◆ CONFERIR'],['awaiting_payment','AGUARDANDO'],['approved','APROVADOS'],['rejected','REJEITADOS']];
+ for(const [key,label] of tags){
+  const b=el('button','n8-stat-chip'+(filter===key?' active':''),label+' · '+counts[key]);
+  b.type='button';b.setAttribute('aria-pressed',String(filter===key));b.addEventListener('click',()=>{filter=key;renderOrders()});
+  group.append(b);
+ }
+ div.append(group);
+}
+function info(row,label,value){
+ if(value===null||value===undefined||value==='')return;
+ const p=el('p');p.append(el('b','',label+': '),document.createTextNode(String(value)));row.append(p);
+}
+function orderCard(o){
  const box=el('article','n8-admin-order'+(o.status==='awaiting_review'?' pending':'')+(o.status==='approved'?' approved':''));
- const head=el('div','n8-admin-order-head'),left=el('div');
- left.append(el('small','',stamp(o.createdAt)),el('strong','',String(o.planId||'VIP').toUpperCase()+' · '+money(o.amount)));
- head.append(left,el('span','n8-admin-status-pill',STATUS[o.status]||o.status));box.append(head);
+ const head=el('div','n8-admin-order-head'),copy=el('div');
+ copy.append(el('small','',date(o.createdAt)),el('strong','',String(o.planId||'VIP').toUpperCase()+' · '+money(o.amount)));
+ const pill=el('span','n8-admin-status-pill',STATUS[o.status]||o.status);
+ head.append(copy,pill);box.append(head);
  const details=el('div','n8-admin-order-details');
- addInfo(details,'Nº DO PEDIDO',o.id);
- addInfo(details,'DISCORD ID',o.discordId);
- if(o.buyerReference)addInfo(details,'INFORMADO PELO COMPRADOR',o.buyerReference);
- if(o.bankReference)addInfo(details,'TRANSACÃO NUBANK',o.bankReference);
- if(o.reviewedAt)addInfo(details,'CONFERIDO EM',stamp(o.reviewedAt));
- if(o.status==='approved')addInfo(details,'CARGO DISCORD',o.roleSynced?'SINCRONIZADO':'PENDENTE');
+ info(details,'PEDIDO',o.id);
+ info(details,'CONTA DISCORD',o.discordId);
+ info(details,'INFORMADO PELO COMPRADOR',o.buyerReference);
+ info(details,'REFERÊNCIA NUBANK VERIFICADA',o.bankReference);
+ info(details,'CONFERIDO EM',o.reviewedAt?date(o.reviewedAt):'');
+ if(o.status==='approved')info(details,'CARGO DISCORD',o.roleSynced?'Sincronizado':'Precisa de sincronização');
  box.append(details);
  if(o.status==='awaiting_review'){
-  const actions=el('div','n8-admin-approve');
-  actions.append(el('label','','REFERÊNCIA ÚNICA DA TRANSFERÊNCIA NO NUBANK'));
-  const input=el('input');
-  input.type='text';input.placeholder='Ex.: EndToEndId do Pix recebido';
-  input.minLength=8;input.maxLength=120;input.autocomplete='off';input.spellcheck=false;
-  input.setAttribute('aria-label','Identificador da transferência recebida no Nubank');
-  const confirmRow=el('label','n8-confirm-row');
-  const confirmCheck=el('input');confirmCheck.type='checkbox';confirmCheck.checked=false;
-  confirmRow.append(confirmCheck,document.createTextNode('Conferi no aplicativo Nubank: dinheiro recebido, valor correto e transferência ainda não utilizada.'));
-  actions.append(input,confirmRow);
-  const buttons=el('div','n8-admin-actions');
-  const approve=el('button','approve','APROVAR E LIBERAR VIP ✓');
+  const area=el('div','n8-admin-approve');
+  area.append(el('label','','REFERÊNCIA REAL DA TRANSAÇÃO NO NUBANK'));
+  const input=el('input');input.type='text';input.maxLength=120;input.autocomplete='off';input.spellcheck=false;
+  input.placeholder='Cole o EndToEndId do Pix recebido';
+  input.setAttribute('aria-label','Referência única do Pix confirmada no Nubank');
+  const check=el('label','n8-confirm-row'),cb=el('input');
+  cb.type='checkbox';
+  check.append(cb,document.createTextNode('Conferi no app Nubank: crédito recebido, valor correto e referência ainda não utilizada.'));
+  const actions=el('div','n8-admin-actions');
+  const approve=el('button','approve','✓ APROVAR E LIBERAR VIP');
   approve.type='button';approve.disabled=true;
-  function validate(){
-   approve.disabled=busy||!confirmCheck.checked||!/^[A-Za-z0-9._/-]{8,120}$/.test(input.value.trim());
-  }
-  input.addEventListener('input',validate);confirmCheck.addEventListener('change',validate);
+  const updateState=()=>approve.disabled=busy||!cb.checked||!/^[A-Za-z0-9._/-]{8,120}$/.test(input.value.trim());
+  input.addEventListener('input',updateState);cb.addEventListener('change',updateState);
   approve.addEventListener('click',async()=>{
-   const reference=input.value.trim();if(busy||!confirmCheck.checked||approve.disabled)return;
-   if(!confirm('Confirma que R$ '+Number(o.amount).toFixed(2).replace('.',',')+' entrou no Nubank para este pedido e que a referência '+reference+' não foi usada em outra venda?'))return;
-   await act('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/approve',{bankReference:reference});
+   const reference=input.value.trim();if(approve.disabled||busy)return;
+   const confirmed=confirm('Confirma que o Nubank recebeu '+money(o.amount)+' referente a este pedido e que a referência '+reference+' não foi utilizada antes?');
+   if(!confirmed)return;
+   await applyAction('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/approve',{bankReference:reference});
   });
-  const reject=el('button','reject','REJEITAR');
-  reject.type='button';reject.addEventListener('click',async()=>{
-   if(!confirm('Rejeitar pedido '+o.id+'? Faça isso apenas após conferir no Nubank que não recebeu o pagamento.'))return;
-   await act('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/reject',{});
+  const reject=el('button','reject','REJEITAR PEDIDO');
+  reject.type='button';
+  reject.addEventListener('click',async()=>{
+   if(!confirm('Rejeitar este pedido? Se houver pagamento recebido, não rejeite até resolver a divergência.'))return;
+   await applyAction('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/reject',{});
   });
-  buttons.append(approve,reject);actions.append(buttons);
-  actions.append(el('small','n8-admin-info','Somente a sessão administrativa pode aprovar. Um identificador bancário não pode ser reutilizado. O botão de confirmação do comprador não entrega o cargo.'));
-  box.append(actions);
+  actions.append(approve,reject);
+  area.append(input,check,actions,el('small','n8-admin-info','O botão “já paguei” do cliente não concede benefícios. A verificação e a aprovação são manuais.'));
+  box.append(area);
  }else if(o.status==='approved'&&!o.roleSynced){
-  const controls=el('div','n8-admin-actions'),retry=el('button','retry','SINCRONIZAR CARGO ↻');
-  retry.type='button';retry.addEventListener('click',()=>act('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/resync',{}));
-  controls.append(retry);box.append(controls);
+  const actions=el('div','n8-admin-actions');
+  const retry=el('button','retry','↻ SINCRONIZAR CARGO DISCORD');
+  retry.type='button';retry.addEventListener('click',()=>applyAction('/api/admin/vip/orders/'+encodeURIComponent(o.id)+'/resync',{}));
+  actions.append(retry);box.append(actions);
  }else if(o.status==='awaiting_payment'){
-  box.append(el('small','n8-admin-info','O cliente ainda não solicitou conferência. Não aprove sem recebimento bancário.'));
+  box.append(el('small','n8-admin-info','Ainda não foi solicitado verificar o crédito. O cliente precisa concluir o Pix e enviar o pedido para conferência.'));
+ }else if(o.status==='rejected'){
+  box.append(el('small','n8-admin-info','Pedido rejeitado. Se houve transferência recebida, revise com o cliente e responsável antes de tomar novas ações.'));
  }
  return box;
 }
-async function act(endpoint,body){
- if(busy)return;
- busy=true;message('Registrando sua decisão com segurança...');
+function renderOrders(){
+ chips();const root=$('#n8AdminOrderList');if(!root)return;
+ root.replaceChildren();const view=matching();
+ setText('#j10OrderVisible',view.length+' de '+orders.length+' pedidos exibidos (máx. 100 recentes)');
+ if(!view.length){
+  const msg=el('div','j10-empty');
+  msg.append(el('strong','','NENHUM PEDIDO ENCONTRADO'),
+    el('p','',loadError||'Quando os primeiros pedidos forem registrados, eles aparecerão aqui com seus respectivos status.'));
+  root.append(msg);return;
+ }
+ view.forEach(item=>root.append(orderCard(item)));
+}
+async function loadReadiness(){
+ try{readiness=await request('/api/admin/vip/readiness');renderReadiness()}
+ catch(e){readiness=null;renderReadiness();tell('Conexões indisponíveis: '+e.message)}
+}
+async function loadOrders(){
  try{
-  const result=await post(endpoint,body);
-  if(result.approved&&!result.roleSynced)
-   message('Pagamento confirmado! O cargo Discord ainda precisa ser sincronizado. Use o botão SINCRONIZAR CARGO.');
-  else message('Operação salva com sucesso.');
-  busy=false;
-  await update();
+  const resp=await request('/api/admin/vip/orders');orders=resp.orders||[];ordersLoaded=true;
+  loadError='';
+  kpis();renderOrders();
+  tell(orders.length+' pedido(s) consultado(s). Última atualização: '+stamp()+'. Confirme sempre o crédito no Nubank.');
  }catch(e){
-  message('Não foi possível concluir: '+e.message);
-  busy=false;
+  orders=[];ordersLoaded=false;loadError='A lista ainda não está disponível: '+e.message;
+  kpis();renderOrders();tell(loadError);
  }
 }
-const reload=$('#n8AdminReload');
-if(reload)reload.addEventListener('click',update);
-const tab=document.querySelector('#adminNav button[data-page="vip-orders"]');
-if(tab)tab.addEventListener('click',update);
-document.addEventListener('visibilitychange',()=>{
- if(!document.hidden&&document.querySelector('.admin-page[data-panel="vip-orders"].active'))update();
-});
-setInterval(()=>{
- if(!document.hidden&&!busy&&document.querySelector('.admin-page[data-panel="vip-orders"].active'))update();
-},45000);
+async function loadAll(){
+ if(!visible()||pendingRequest)return;
+ pendingRequest=true;
+ try{await Promise.all([loadReadiness(),loadOrders()])}finally{pendingRequest=false}
+}
+async function applyAction(url,body){
+ if(busy)return;busy=true;tell('Registrando decisão no servidor...');
+ try{
+  const result=await post(url,body);
+  if(result.approved&&!result.roleSynced)tell('Pagamento aprovado; é necessário sincronizar o cargo no Discord.');
+  else tell('Operação registrada com sucesso.');
+  busy=false;await loadAll();
+ }catch(e){busy=false;tell('A operação não foi concluída: '+e.message);await loadOrders()}
+}
+function exportCsv(){
+ if(!ordersLoaded||!orders.length){tell('Não há pedidos disponíveis para exportar.');return}
+ const headings=['Pedido','Data','Discord ID','Plano','Valor BRL','Status','Ref. informada','Ref. verificada','Cargo sincronizado'];
+ const cell=v=>{
+  const raw=String(v??'');
+  const safe=/^[=+\-@]/.test(raw)?"'"+raw:raw;
+  return '"'+safe.replace(/"/g,'""')+'"';
+ };
+ const lines=[headings.map(cell).join(';'),...orders.map(o=>[
+  o.id,date(o.createdAt),o.discordId,o.planId,Number(o.amount||0).toFixed(2).replace('.',','),
+  STATUS[o.status]||o.status,o.buyerReference||'',o.bankReference||'',o.roleSynced?'Sim':'Não'
+ ].map(cell).join(';'))];
+ const url=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}));
+ const link=el('a');link.href=url;link.download='jotta-pedidos-vip-'+new Date().toISOString().slice(0,10)+'.csv';
+ document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+ tell('CSV exportado com os até 100 pedidos carregados. Guarde esse arquivo em local seguro.');
+}
+function attach(){
+ $('#n8AdminReload')?.addEventListener('click',loadAll);
+ $('#j10ReadinessRefresh')?.addEventListener('click',loadReadiness);
+ $('#j10OrderSearch')?.addEventListener('input',e=>{search=e.target.value;renderOrders()});
+ $('#j10OrderSort')?.addEventListener('change',e=>{sort=e.target.value;renderOrders()});
+ $('#j10ExportCsv')?.addEventListener('click',exportCsv);
+ $('#j10GoFinance')?.addEventListener('click',()=>nav('vip-orders'));
+ $('#j10PendingShortcut')?.addEventListener('click',()=>{filter='awaiting_review';nav('vip-orders');renderOrders()});
+ for(const item of $$('#adminNav button[data-page="overview"],#adminNav button[data-page="vip-orders"]')){
+  item.addEventListener('click',()=>{if(visible())loadAll()});
+ }
+ if($('#adminApp')){
+  const observer=new MutationObserver(()=>{
+   if(visible()){loadAll();observer.disconnect()}
+  });
+  observer.observe($('#adminApp'),{attributes:true,attributeFilter:['hidden']});
+ }
+ if(visible())loadAll();
+ document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden&&visible()&&$('#adminNav button[data-page="vip-orders"]')?.classList.contains('active'))
+   loadAll();
+ });
+ // Avoid erasing a bank-reference input while the admin is typing.
+ setInterval(()=>{
+  if(document.hidden||!visible()||busy||pendingRequest)return;
+  if(!$('#adminNav button[data-page="vip-orders"]')?.classList.contains('active'))return;
+  const active=document.activeElement;
+  if(active&&active.closest('.n8-admin-order'))return;
+  if(active&&active.id==='j10OrderSearch')return;
+  loadAll();
+ },60000);
+}
+attach();
 })();
