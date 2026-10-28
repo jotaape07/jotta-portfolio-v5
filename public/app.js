@@ -33,9 +33,64 @@ function renderGames(){const wrap=$('#gamesList');if(!wrap)return;wrap.replaceCh
 function renderSkills(){const grid=$('#skillsGrid');grid.replaceChildren();config.skills.forEach((s,i)=>{const card=el('div','skill reveal');const top=el('div','skill-top');top.append(el('span','',String(i+1).padStart(2,'0')+' / 0'+config.skills.length),el('span','',s.category));card.append(top,el('strong','',s.name),el('div','skill-bottom',s.description));grid.append(card)})}
 function renderServices(){const grid=$('#servicesList');grid.replaceChildren();config.services.forEach((s,i)=>{const row=el('div','service reveal');row.append(el('span','service-num',String(i+1).padStart(2,'0')));const name=el('div');name.append(el('small','',s.detail),el('strong','',s.name));row.append(name,el('p','service-desc',s.description),el('span','service-arrow','↗'));grid.append(row)})}
 function mediaType(m){return m.type==='video'||m.category==='videos'?'video':'image'}
-function renderMedia(){const grid=$('#mediaGrid'),empty=$('#galleryEmpty');grid.replaceChildren();const filtered=media.filter(m=>activeFilter==='todos'||(activeFilter==='videos'?mediaType(m)==='video':m.category===activeFilter));txt('#mediaCount','/ '+String(media.length).padStart(2,'0')+' ITEMS');empty.hidden=filtered.length!==0;for(const m of filtered){const b=el('button','media-card');b.type='button';const cover=el('div','media-cover'),img=el('img');img.loading='lazy';img.src=safeImg(m.thumbnail||m.url,'assets/systems-poster.svg');img.decoding='async';img.alt=m.title||'Projeto';cover.append(img);if(mediaType(m)==='video'){cover.append(el('span','media-play','▶'));b.setAttribute('aria-label','Assistir '+(m.title||'vídeo'))}const details=el('div','media-text');details.append(el('strong','',m.title||'Sem título'),el('small','',labels[m.category]||'ARCHIVE'));b.append(cover,details);b.addEventListener('click',()=>openMedia(m));grid.append(b)}}
-function openMedia(m){const modal=$('#lightbox'),holder=$('#lightboxBody');holder.replaceChildren();const video=mediaType(m)==='video',obj=el(video?'video':'img');if(video){obj.src=m.url;obj.controls=true;obj.autoplay=false;obj.preload='metadata';obj.poster=safeImg(m.thumbnail,'');obj.playsInline=true}else{obj.src=m.url;obj.alt=m.title||'Imagem ampliada'}holder.append(obj);txt('#lightboxTitle',m.title||'MÍDIA');txt('#lightboxMeta',labels[m.category]||'PROJECT');modal.hidden=false;B.classList.add('modal-open');$('#lightboxClose').focus()}
-function closeMedia(){const m=$('#lightbox');m.hidden=true;$('#lightboxBody').replaceChildren();B.classList.remove('modal-open')}
+function mediaCard(m,featured=false){
+ const kind=mediaType(m)==='video'?'sistema':'mapa';
+ const b=el('button','media-card'+(featured?' media-feature-card':'')+' media-'+kind);
+ b.type='button';b.setAttribute('aria-label',(kind==='sistema'?'Assistir demonstração: ':'Ampliar imagem: ')+(m.title||'Mídia'));
+ const cover=el('div','media-cover'),img=el('img');
+ img.loading=featured?'eager':'lazy';img.decoding='async';img.src=safeImg(m.thumbnail||m.url,'assets/jotta-systems-lab.svg');img.alt=m.title||'Projeto';
+ img.addEventListener('error',()=>{img.src='assets/jotta-systems-lab.svg'},{once:true});
+ cover.append(img);
+ const top=el('div','media-overlay-top');
+ top.append(el('span','media-type-pill',kind==='sistema'?'DEMONSTRAÇÃO DE SISTEMA':'CENÁRIO / MAPA'));
+ if(featured)top.append(el('span','media-feature-label','DESTAQUE DO ESTÚDIO'));
+ cover.append(top);
+ if(kind==='sistema')cover.append(el('span','media-play','▶'));
+ const foot=el('div','media-text'),info=el('div','media-caption');
+ info.append(el('small','media-category',labels[m.category]||'PORTFÓLIO'),el('strong','',m.title||'Sem título'));
+ if(m.description)info.append(el('p','media-description',m.description));
+ foot.append(info,el('span','media-action',kind==='sistema'?'ASSISTIR ↗':'AMPLIAR ↗'));
+ b.append(cover,foot);
+ b.addEventListener('click',()=>openMedia(m));
+ return b;
+}
+function renderMedia(){
+ const grid=$('#mediaGrid'),feature=$('#featuredMedia'),heading=$('#showcaseSection'),empty=$('#galleryEmpty');
+ const matches=m=>activeFilter==='todos'||(activeFilter==='videos'?mediaType(m)==='video':m.category===activeFilter);
+ const filtered=media.filter(matches);
+ const selected=activeFilter==='todos'?[media.find(m=>m.id==='jotta-system-02'),media.find(m=>m.id==='jotta-mapa-cidade')].filter(Boolean):[];
+ feature.replaceChildren(...selected.map(m=>mediaCard(m,true)));
+ feature.hidden=selected.length===0;heading.hidden=selected.length===0;
+ const rest=filtered.filter(m=>!selected.includes(m));
+ grid.replaceChildren(...rest.map(m=>mediaCard(m)));
+ empty.hidden=filtered.length!==0;
+ txt('#mediaCount','/ '+String(media.length).padStart(2,'0')+' ITEMS');
+ txt('#mediaArchiveCount','/ '+String(rest.length).padStart(2,'0'));
+ txt('[data-stat="sistemas"]',String(media.filter(m=>m.category==='sistemas').length).padStart(2,'0'));
+ txt('[data-stat="mapas"]',String(media.filter(m=>m.category==='mapas'||m.category==='gameplay').length).padStart(2,'0'));
+ txt('[data-stat="jogos"]',String((config?.games||[]).filter(g=>g.visible).length).padStart(2,'0'));
+ for(const b of $$('#mediaFilters [data-filter]')){
+  const name=b.dataset.filter,num=media.filter(m=>name==='todos'||(name==='videos'?mediaType(m)==='video':m.category===name)).length;
+  let stat=b.querySelector('.filter-count');if(!stat){stat=el('span','filter-count');b.append(stat)}
+  stat.textContent=String(num).padStart(2,'0');
+ }
+}
+function openMedia(m){
+ const modal=$('#lightbox'),holder=$('#lightboxBody');holder.replaceChildren();
+ const isVideo=mediaType(m)==='video',obj=el(isVideo?'video':'img');
+ if(isVideo){obj.src=m.url;obj.controls=true;obj.preload='metadata';obj.playsInline=true;obj.poster=safeImg(m.thumbnail,'');obj.setAttribute('controlsList','nodownload')}
+ else{obj.src=m.url;obj.alt=m.title||'Imagem ampliada'}
+ holder.append(obj);
+ txt('#lightboxTitle',m.title||'MÍDIA');txt('#lightboxMeta',labels[m.category]||'PROJETO');
+ const original=$('#lightboxOriginal');if(original){original.href=m.url;original.textContent=isVideo?'ABRIR VÍDEO ORIGINAL ↗':'ABRIR IMAGEM ORIGINAL ↗'}
+ modal.hidden=false;B.classList.add('modal-open');$('#lightboxClose').focus();
+ if(isVideo&&!(matchMedia('(prefers-reduced-motion:reduce)').matches)){const attempt=obj.play();if(attempt?.catch)attempt.catch(()=>{})}
+}
+function closeMedia(){
+ const modal=$('#lightbox'),video=$('#lightboxBody video');
+ if(video){video.pause();video.removeAttribute('src');video.load()}
+ modal.hidden=true;$('#lightboxBody').replaceChildren();B.classList.remove('modal-open');
+}
 const builtInGallery=[
  {id:'jotta-mapa-casa',title:'Mapa — Casa Moderna',category:'mapas',type:'image',url:'assets/Roblox_Mapa_01.webp?v=hd3'},
  {id:'jotta-mapa-cidade',title:'Mapa — Cidade no Roblox',category:'mapas',type:'image',url:'assets/Roblox_Mapa_02.webp?v=hd3'},
