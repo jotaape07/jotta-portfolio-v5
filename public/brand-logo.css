@@ -1,0 +1,19 @@
+/* JOTTA STUDIO / Avatar de marca no topo. Nao altera a abertura. */
+.nav .brand-mark.brand-photo{
+ padding:0;overflow:hidden;width:49px;height:49px;flex:0 0 49px;
+ background:#101113;border:2px solid #f1514b;
+ box-shadow:0 0 0 1px #1b1719,inset 0 0 0 2px #111,0 0 18px #ed37351d;
+ transition:border-color .25s,box-shadow .25s,transform .25s;
+}
+.nav .brand-mark.brand-photo img{
+ display:block;width:100%;height:100%;object-fit:cover;
+ filter:contrast(1.12) saturate(1.05);
+}
+.nav .brand:hover .brand-mark.brand-photo{
+ transform:translateY(-2px);border-color:#ffb289;
+ box-shadow:0 0 0 1px #251719,0 0 25px #ef4e4a60;
+}
+@media(prefers-reduced-motion:reduce){
+ .nav .brand-mark.brand-photo{transition:none}
+ .nav .brand:hover .brand-mark.brand-photo{transform:none}
+}
