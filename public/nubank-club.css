@@ -1,0 +1,88 @@
+/* JOTTA STUDIOS / VIP NUBANK — no false claims about automatic verification */
+:root{--pink:#ac6ad4;--gold:#f4c27d}
+.n8-ambient{position:fixed;inset:0;pointer-events:none;z-index:-2;background:
+ radial-gradient(ellipse 45% 50% at 95% 15%,rgba(202,84,180,.1),transparent 80%),
+ radial-gradient(ellipse 45% 45% at 10% 80%,rgba(230,80,70,.085),transparent 80%)}
+header{position:sticky;top:0;z-index:12;background:#0b0d11e5;backdrop-filter:blur(18px);border-bottom:1px solid #4b3844}
+.n8-logo{display:inline-flex;gap:11px;align-items:center;font:900 20px 'Barlow Condensed',Impact,sans-serif!important;letter-spacing:.01em}
+.n8-logo img{width:36px;height:36px;object-fit:cover;border:1px solid #f15e59;box-shadow:0 0 18px #ed545934}
+.n8-nav{display:flex;gap:23px;align-items:center;flex-wrap:wrap}.n8-nav a{display:inline-flex;align-items:center;gap:6px}
+.n8-brand-icon{display:inline-block;width:20px;height:20px;object-fit:contain;filter:invert(1);vertical-align:middle}
+.n8-hero{min-height:0;padding:clamp(45px,6vw,90px) 0 50px}
+.n8-hero>span.n8-kicker,.n8-kicker{color:#db9e97;font:700 10px 'Space Mono',monospace;letter-spacing:.13em}
+.n8-hero h1{font-size:clamp(98px,14vw,205px);margin-top:30px;margin-bottom:20px}
+.n8-features{display:flex;flex-wrap:wrap;gap:11px;margin:30px 0}
+.n8-features span{padding:10px 12px;border:1px solid #65464d;background:#2d1b244b;color:#e1c6bf;font:700 10px 'Space Mono',monospace}
+.n8-notice{max-width:760px!important}
+.n8-account{font:700 12px/1.8 'Space Mono',monospace;margin:18px 0;color:#f1d09f}
+.n8-account-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.n8-account-actions .button{display:inline-flex;gap:12px;align-items:center}
+.n8-account-actions .button .n8-brand-icon{width:20px;height:20px}
+.n8-title-row{display:flex!important;align-items:end;justify-content:space-between;gap:25px;margin-bottom:30px}
+.n8-title-row h2{font:900 clamp(45px,6vw,79px)/.95 'Barlow Condensed',Impact,sans-serif;letter-spacing:-.02em;margin:13px 0 0}
+.n8-title-row h2 em{font-style:normal;color:#f06860}
+.n8-title-row>p{max-width:340px;margin:0;color:#bab8c0;font:400 13px/1.7 'DM Sans',sans-serif}
+.n8-plans{padding-top:55px}
+.n8-plan-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.plan{position:relative;overflow:hidden}
+.plan .n8-plan-badge{display:inline-flex;align-items:center;justify-content:space-between;gap:10px;color:#f3a59c;border-bottom:1px solid #55444b;padding-bottom:13px;font:700 10px 'Space Mono',monospace}
+.plan .n8-plan-price{font:900 clamp(35px,3vw,48px) 'Barlow Condensed',Impact,sans-serif;color:#ffe0b2;letter-spacing:-.015em}
+.plan .n8-plan-price small{color:#b4adb4;font:500 12px 'DM Sans',sans-serif}
+.plan .benefit{color:#f5877d}.plan.prime{box-shadow:0 0 35px #dbad6340;border-color:#d2ac72}
+.plan.prime::after{content:"";position:absolute;inset:-60%;pointer-events:none;background:conic-gradient(transparent 0deg,transparent 305deg,#f9d28a11 325deg,transparent 350deg);animation:n8-rotate 14s linear infinite}
+.plan.prime>*{position:relative;z-index:1}
+.plan button{background:#f2695c;color:#171012;min-height:44px}
+.plan button:not(:disabled):hover{background:#fff}
+.n8-payment{margin:40px 0 90px;padding:32px clamp(18px,4vw,44px);border:1px solid #a35a91;background:linear-gradient(140deg,#291a30,#141119 62%);position:relative}
+.n8-payment[hidden]{display:none!important}
+.n8-payment::before{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid #a95a9f55}
+.n8-payment-head h2{font:900 clamp(45px,6vw,80px)/.93 'Barlow Condensed',Impact,sans-serif;margin:16px 0 27px}
+.n8-payment-head h2 em{font-style:normal;color:#e19bef}
+.n8-payment-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(240px,.8fr);gap:30px;align-items:start}
+.n8-payment-card{border:1px solid #73516f;background:#140f18de;padding:28px}
+.n8-bank-label{display:inline-flex;align-items:center;gap:10px;color:#ebbbf1;font:800 11px 'Space Mono',monospace;letter-spacing:.04em}
+.n8-bank-label .n8-brand-icon{width:28px;height:28px;filter:invert(71%) sepia(33%) saturate(779%) hue-rotate(235deg)}
+.n8-payment-card>p{max-width:620px;color:#bab3be;line-height:1.8;font-size:12px;margin:18px 0 28px}
+.n8-pay-field{border-top:1px solid #59455b;padding:17px 0}
+.n8-pay-field small{display:block;color:#bfa8c5;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;margin-bottom:10px}
+.n8-pay-field strong{display:block;color:#fff;font:800 clamp(17px,2vw,23px) 'DM Sans',sans-serif;overflow-wrap:anywhere}
+.n8-pay-field:first-of-type strong{font:900 48px 'Barlow Condensed',Impact,sans-serif;color:#f2c4c7}
+.n8-pay-field code{font:700 13px 'Space Mono',monospace;color:#f4f0f7;overflow-wrap:anywhere}
+.n8-copy-row{display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.n8-copy-row button{padding:12px 15px;font-size:10px;border:1px solid #cf9de3;background:#8b50ab;color:#fff}
+.n8-copy-row button:hover{background:#b76bdd}
+.n8-paid{width:100%;margin-top:18px;padding:18px;font-size:11px;letter-spacing:.02em;background:#eaa6da;color:#18101a}
+.n8-paid:disabled{opacity:.45;cursor:not-allowed}
+.n8-security-note{display:block;margin-top:14px;color:#d6c8d8;font:500 11px/1.8 'DM Sans',sans-serif}
+.n8-steps{padding:20px 10px}.n8-steps h3{font:900 30px 'Barlow Condensed',Impact,sans-serif;margin:0 0 20px}
+.n8-steps>div{display:flex;gap:15px;padding:17px 0;border-bottom:1px solid #735b6844}
+.n8-steps b{font:800 22px 'Barlow Condensed',Impact,sans-serif;color:#f6beec}
+.n8-steps p{margin:0;color:#cac0ce;font:400 12px/1.75 'DM Sans',sans-serif}
+.n8-steps a{display:inline-block;color:#f3c2e8;border-bottom:1px solid #aa6eb1;padding:15px 0 5px;font:700 11px 'Space Mono',monospace;margin-top:12px}
+.n8-history{padding:48px 0 62px;border-top:1px solid #55414d}
+.n8-history #n8Refresh{background:transparent;color:#fff;border:1px solid #74505c;padding:14px}
+.n8-order-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px;font-size:12px;color:#b8b8bd}
+.n8-order{background:#16171c;border:1px solid #433d47;padding:19px;display:flex;flex-direction:column;gap:8px}
+.n8-order strong{font:800 22px 'Barlow Condensed',Impact,sans-serif;color:#f1f1f0}
+.n8-order small{color:#9ba0a6;font:700 10px 'Space Mono',monospace;overflow-wrap:anywhere}
+.n8-order .n8-order-status{color:#f0ae84;font:800 11px 'Space Mono',monospace}
+.n8-order .n8-order-status.approved{color:#77deab}.n8-order .n8-order-status.rejected{color:#ff7e7e}
+.n8-order button{align-self:start;background:#261f2b;border:1px solid #805974;color:#f5c6e1;padding:10px;font-size:10px}
+.notes{max-width:1100px}
+[hidden]{display:none!important}
+@keyframes n8-rotate{to{transform:rotate(360deg)}}
+@media(max-width:1120px){.n8-plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.n8-payment-layout{grid-template-columns:1fr}.n8-steps{padding:10px}}
+@media(max-width:670px){.n8-nav{gap:12px}.n8-nav a{font-size:9px}.n8-title-row{flex-direction:column;align-items:start}.n8-plan-grid{grid-template-columns:1fr}.n8-hero h1{font-size:clamp(94px,20vw,148px)}.n8-payment{padding:18px}.n8-payment-card{padding:17px}.n8-history .n8-title-row{gap:15px}}
+@media(prefers-reduced-motion:reduce){.plan.prime::after{animation:none}.plan{transition:none}}
+
+.n8-legal-consent{padding:18px 22px;margin:0 0 24px;border:1px solid #755c67;background:#251b23}
+.n8-legal-consent label{display:flex;align-items:flex-start;gap:12px;font:500 12px/1.8 'DM Sans',sans-serif;color:#d9d2d7;cursor:pointer}
+.n8-legal-consent input{margin-top:4px;accent-color:#e9a4d0;flex:none;width:16px;height:16px}
+.n8-legal-consent a{color:#f3bfdb;text-decoration:underline;text-underline-offset:3px}
+.n8-legal-consent a:focus-visible{outline:2px solid #f3bfdb;outline-offset:2px}
+
+.n8-plans>.n8-legal-consent{display:block!important;grid-template-columns:none!important}
+
+.n8-pay-field input#n8TransferReference{width:100%;border:1px solid #795b7d;background:#0c0e14;color:#fff;min-height:47px;padding:11px 13px;font:600 12px 'Space Mono',monospace;outline:none}
+.n8-pay-field input#n8TransferReference:focus{border-color:#d9a6dc;box-shadow:0 0 0 3px #b661b222}
+.n8-pay-field input#n8TransferReference::placeholder{color:#8f8a95}

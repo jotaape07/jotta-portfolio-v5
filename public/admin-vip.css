@@ -1,0 +1,42 @@
+/* JOTTA CONTROL ROOM / Nubank manual order approval */
+.n8-admin-alert{margin:24px 0;padding:23px 26px;border:1px solid #a15b86;background:linear-gradient(115deg,#28152b,#111318);box-shadow:inset 3px 0 0 #cf7ca9}
+.n8-admin-alert strong{font:800 12px 'Space Mono',monospace;color:#f0afd7;letter-spacing:.1em}
+.n8-admin-alert p{color:#cbb9cd;font:500 12px/1.9 'DM Sans',sans-serif;margin:10px 0 0;max-width:920px}
+.n8-admin-alert b{color:#fff}
+.n8-admin-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin:25px 0 15px}
+.n8-admin-counts{color:#b4bdc0;font:800 10px/1.8 'Space Mono',monospace;letter-spacing:.04em}
+.n8-admin-feedback{padding:15px 0;color:#acb8bc;font:600 12px/1.7 'DM Sans',sans-serif}
+.n8-admin-order-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(350px,100%),1fr));gap:14px;align-items:start}
+.n8-admin-order{background:linear-gradient(150deg,#1a1a20,#101114);border:1px solid #4b424e;padding:21px;position:relative}
+.n8-admin-order.pending{border-color:#835b77}
+.n8-admin-order.approved{border-color:#4e7563}
+.n8-admin-order-head{display:flex;justify-content:space-between;gap:10px;align-items:start;margin-bottom:15px}
+.n8-admin-order-head>div{display:grid;gap:6px}
+.n8-admin-order-head strong{font:900 29px 'Barlow Condensed',Impact,sans-serif;color:#f7f4f5;line-height:1}
+.n8-admin-order-head small{font:700 10px 'Space Mono',monospace;color:#929aa1}
+.n8-admin-status-pill{font:800 10px/1.5 'Space Mono',monospace;letter-spacing:.02em;border:1px solid #806377;padding:7px 8px;color:#e5b8d1;max-width:155px;text-align:right}
+.n8-admin-order.approved .n8-admin-status-pill{border-color:#619675;color:#8ce3aa}
+.n8-admin-order-details{border-top:1px solid #3d383f;padding-top:13px;display:grid;gap:8px;margin-bottom:18px}
+.n8-admin-order-details p{margin:0;color:#b7b8be;font:500 11px/1.6 'DM Sans',sans-serif;overflow-wrap:anywhere}
+.n8-admin-order-details p b{font-family:'Space Mono',monospace;color:#ddd;font-size:10px}
+.n8-admin-order-details a{color:#e9adca;border-bottom:1px dotted #975d83}
+.n8-admin-approve{display:grid;gap:11px;border-top:1px solid #59435b;padding-top:17px}
+.n8-admin-approve label{font:700 10px 'Space Mono',monospace;color:#dfc3d7;letter-spacing:.04em}
+.n8-admin-approve input{width:100%;min-height:43px;border:1px solid #66556a;background:#090b10;color:#fff;font:600 12px 'Space Mono',monospace;padding:10px 12px;outline:none}
+.n8-admin-approve input:focus{border-color:#e09acb;box-shadow:0 0 0 2px #cf65b11e}
+.n8-admin-actions{display:flex;flex-wrap:wrap;gap:10px}
+.n8-admin-actions button{border:1px solid #ae7999;background:#8e4a75;color:#fff;padding:12px 15px;font:800 10px 'Space Mono',monospace}
+.n8-admin-actions button:hover{background:#ad628e}
+.n8-admin-actions button:disabled{opacity:.45;cursor:wait}
+.n8-admin-actions button.reject{background:transparent;border-color:#85565b;color:#ffacac}
+.n8-admin-actions button.retry{background:#2c4134;border-color:#608c72;color:#a7efc2}
+.n8-admin-info{color:#9da3a8;font:500 10px/1.7 'DM Sans',sans-serif}
+@media(max-width:600px){.n8-admin-order-list{grid-template-columns:1fr}.n8-admin-order{padding:17px}.n8-admin-order-head strong{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.n8-admin-approve input{transition:none}}
+
+.n8-admin-count-grid{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.n8-stat-chip{border:1px solid #625066;background:#1b1920;color:#dbd5db;padding:10px 12px;font:800 10px 'Space Mono',monospace;cursor:pointer;transition:border-color .2s,background .2s}
+.n8-stat-chip:hover,.n8-stat-chip.active{background:#493047;border-color:#d397b8;color:#fff}
+.n8-confirm-row{display:flex;gap:9px;align-items:flex-start;font:500 11px/1.65 'DM Sans',sans-serif;color:#dec8dc;cursor:pointer;letter-spacing:0}
+.n8-confirm-row input{margin:3px 0 0;flex:0 0 16px;min-width:16px;width:16px!important;min-height:16px!important;height:16px;accent-color:#d18bb5}
+.n8-admin-empty{padding:25px;color:#abb1b5;font:500 12px 'DM Sans',sans-serif;border:1px dashed #57454e}

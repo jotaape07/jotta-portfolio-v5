@@ -1,1 +1,40 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JOTTA STUDIOS | VIP CLUB</title><link rel="stylesheet" href="/club.css"><link rel="icon" type="image/webp" href="/assets/jotta-avatar-logo.webp?v=5"></head><body><header><a href="/">JOTTA STUDIOS</a><a href="https://discord.gg/Bds2pxD7qd" target="_blank" rel="noopener noreferrer"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/discord.svg" alt="" style="width:15px;height:15px;filter:invert(1);vertical-align:middle;margin-right:6px"> DISCORD</a><a href="/regras.html">TERMOS</a></header><main><section class="hero"><span>MEMBERS AREA / 004</span><h1>VIP <em>CLUB.</em></h1><p>Descontos exclusivos, recompensas e benefícios para quem apoia o estúdio.</p><div id="notice" role="status">Consultando disponibilidade.</div><div id="account"></div><a id="connect" class="button" href="/api/vip/login">CONECTAR DISCORD ↗</a><button id="logout" hidden>SAIR</button></section><section class="plans"><h2>ESCOLHA SEU PLANO</h2><div id="plans"></div><p class="notes">Pix com renovação mensal manual. Benefícios só são liberados após confirmação oficial do provedor. Não enviamos cobranças automáticas. Confira os <a href="/regras.html">termos, cancelamentos e reembolsos</a>.</p></section></main><footer><a href="/">PORTFÓLIO</a><a href="/regras.html">REGRAS</a><a href="mailto:joaopedr414@gmail.com">CONTATO</a></footer><script src="/club.js" defer></script></body></html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c0d10"><meta name="description" content="JOTTA STUDIOS VIP Club — assine usando Pix Nubank e receba benefícios após confirmação no banco.">
+<title>VIP CLUB • JOTTA STUDIOS</title>
+<link rel="icon" type="image/webp" href="/assets/jotta-avatar-logo.webp?v=5">
+<link rel="stylesheet" href="/club.css"><link rel="stylesheet" href="/nubank-club.css?v=2"></head>
+<body>
+<div class="n8-ambient" aria-hidden="true"></div>
+<header><a href="/" class="n8-logo"><img src="/assets/jotta-avatar-logo.webp?v=5" alt="" width="33" height="33"> JOTTA STUDIOS</a>
+<nav class="n8-nav"><a href="/">PORTFÓLIO</a><a href="https://discord.gg/Bds2pxD7qd" target="_blank" rel="noopener noreferrer"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/discord.svg" alt="" class="n8-brand-icon"> DISCORD</a><a href="/regras.html">TERMOS</a></nav></header>
+<main>
+<section class="hero n8-hero">
+<span class="n8-kicker">JOTTA STUDIOS / MEMBERS CLUB / 2026</span>
+<h1>VIP <em>CLUB.</em></h1>
+<p>Planos exclusivos, descontos especiais e vantagens para quem acompanha o estúdio. Pix direto no Nubank, com conferência pelo responsável antes da ativação.</p>
+<div class="n8-features"><span>✦ 4 NÍVEIS VIP</span><span>⚡ DESCONTOS EXCLUSIVOS</span><span>◈ DISCORD INTEGRADO</span></div>
+<div id="notice" class="n8-notice" role="status">Consultando disponibilidade das assinaturas...</div>
+<div id="account" class="n8-account"></div>
+<div class="n8-account-actions"><a id="connect" class="button" href="/api/vip/login"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/discord.svg" alt="" class="n8-brand-icon"> CONECTAR DISCORD ↗</a>
+<button id="logout" type="button" hidden>SAIR DA CONTA</button></div>
+</section>
+<section class="plans n8-plans"><div class="n8-title-row"><div><span class="n8-kicker">SELECIONE SEU NÍVEL</span><h2>ESCOLHA SEU <em>PLANO.</em></h2></div><p>Benefícios por 30 dias. Renove somente quando quiser, com novo Pix.</p></div>
+<div class="n8-legal-consent"><label><input id="n8AcceptTerms" type="checkbox"> <span>Li e aceito os <a href="/regras.html" target="_blank" rel="noopener noreferrer">Termos de Serviço e regras VIP</a>. Entendo que o Pix é conferido manualmente, não há renovação automática e devo ter autorização de responsável quando necessária.</span></label></div><div id="plans" class="n8-plan-grid" aria-live="polite"></div></section>
+<section id="n8PaymentSection" class="n8-payment" hidden aria-labelledby="n8PaymentTitle">
+<div class="n8-payment-head"><span class="n8-kicker">PIX NUBANK • PEDIDO INDIVIDUAL</span><h2 id="n8PaymentTitle">FINALIZE COM <em>SEGURANÇA.</em></h2></div>
+<div class="n8-payment-layout"><div class="n8-payment-card">
+<div class="n8-bank-label"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/nubank.svg" alt="" class="n8-brand-icon"> PAGAMENTO DIRETO / NUBANK</div>
+<p>Ao fazer o Pix, confira se o aplicativo do seu banco mostra exatamente este beneficiário. Se o nome for diferente, não transfira.</p>
+<div class="n8-pay-field"><small>VALOR EXATO DO PEDIDO</small><strong id="n8Amount">—</strong></div>
+<div class="n8-pay-field"><small>TITULAR A CONFERIR NO BANCO</small><strong id="n8Holder">—</strong></div>
+<div class="n8-pay-field"><small>CHAVE PIX</small><div class="n8-copy-row"><code id="n8PixKey">—</code><button id="n8Copy" type="button">COPIAR CHAVE</button></div></div>
+<div class="n8-pay-field"><small>NÚMERO DO PEDIDO</small><code id="n8OrderId">—</code></div><div class="n8-pay-field"><label for="n8TransferReference"><small>ID DA TRANSAÇÃO / END-TO-END (OPCIONAL)</small></label><input id="n8TransferReference" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="Cole o identificador do comprovante, se tiver"><small>Ajuda a localizar seu Pix. Não envie CPF, código de login ou dados bancários.</small></div>
+<button id="n8Paid" class="n8-paid" type="button">JÁ FIZ O PIX — ENVIAR PARA CONFERÊNCIA ↗</button>
+<small class="n8-security-note">A confirmação não é automática. O JOTTA STUDIOS verifica o recebimento no aplicativo Nubank. Prints e comprovantes não ativam VIPs sozinhos.</small>
+</div><div class="n8-steps"><h3>COMO FUNCIONA</h3><div><b>01</b><p>Copie a chave Pix e confira o titular na tela do seu banco.</p></div><div><b>02</b><p>Transfira o valor exato do plano e envie o pedido para conferência.</p></div><div><b>03</b><p>A equipe verifica o crédito no extrato Nubank e aprova ou rejeita.</p></div><div><b>04</b><p>Após a aprovação, o bot entrega seu cargo VIP no servidor Discord.</p></div><a href="https://discord.gg/Bds2pxD7qd" target="_blank" rel="noopener noreferrer">ENTRAR NO NOSSO DISCORD ↗</a></div></div></section>
+<section class="n8-history" aria-labelledby="n8HistoryTitle"><div class="n8-title-row"><div><span class="n8-kicker">SEUS REGISTROS</span><h2 id="n8HistoryTitle">MEUS <em>PEDIDOS.</em></h2></div><button id="n8Refresh" type="button">ATUALIZAR STATUS ↻</button></div><div id="n8OrderList" class="n8-order-list">Conecte sua conta Discord para consultar pedidos.</div></section>
+<p class="notes">Assinaturas com renovação manual, sem débito recorrente. Os descontos não são cumulativos e dependem do plano ativo. Para cancelamento, reembolso e privacidade, consulte os <a href="/regras.html">termos de serviço</a>.</p>
+</main>
+<footer><a href="/">PORTFÓLIO</a><a href="https://discord.gg/Bds2pxD7qd" target="_blank" rel="noopener noreferrer">DISCORD</a><a href="/regras.html">TERMOS</a><a href="mailto:joaopedr414@gmail.com">ATENDIMENTO</a><span>© 2026 JOTTA STUDIOS</span></footer>
+<script src="/club-nubank.js?v=2" defer></script></body></html>
