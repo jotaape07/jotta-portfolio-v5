@@ -2,15 +2,15 @@
   "brand": "JOTTA",
   "accent": "red",
   "intro": {
-    "overline": "JOTTA STUDIO / CREATIVE GAME DEVELOPMENT",
-    "line": "O FUTURO É CRIADO.",
-    "note": "LUAU / ROBLOX STUDIO / DESIGN / DEVELOPMENT",
-    "background": "assets/jotta-brand-intro.svg"
+    "overline": "JOTTA® / GAME DEVELOPMENT STUDIO",
+    "line": "CRIANDO EXPERIÊNCIAS.",
+    "note": "GAME DEVELOPMENT / SCRIPTING / ROBLOX STUDIO",
+    "background": "assets/jotta-intro-clean.svg"
   },
   "hero": {
     "eyebrow": "JOTTA STUDIO // LEAD DEVELOPER & SCRIPTER",
-    "line1": "DESENVOLVO",
-    "line2": "EXPERIÊNCIAS.",
+    "line1": "CRIANDO",
+    "line2": "JOGOS & SISTEMAS.",
     "description": "Sou Jotta, Lead Developer & Scripter. Crio jogos no Roblox, sistemas inteligentes e interfaces que transformam boas ideias em experiências de verdade.",
     "background": "assets/jotta-developer-workspace.svg",
     "avatar": true
@@ -104,8 +104,8 @@
     }
   ],
   "gallery": {
-    "title": "INSIDE THE STUDIO",
-    "subtitle": "Capas, interfaces, bastidores e visuais dos meus projetos.",
+    "title": "PROJETOS EM MOVIMENTO",
+    "subtitle": "Vídeos, gameplay, mapas e interfaces — trabalhos reais desenvolvidos no Roblox Studio.",
     "highlight": "assets/jotta-gallery-board.svg"
   },
   "settings": {

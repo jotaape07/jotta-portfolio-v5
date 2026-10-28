@@ -38,13 +38,55 @@ $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const btn
 $('#logoutBtn').addEventListener('click',async()=>{try{await call('/api/admin/logout',{method:'POST'})}finally{showLogin()}});
 $$('#adminNav button').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));$('#saveBtn').addEventListener('click',save);
 $$('#accentOptions button').forEach(b=>b.addEventListener('click',()=>{set('accent',b.dataset.color);$$('#accentOptions button').forEach(x=>x.classList.toggle('selected',x===b))}));
-$('#applyArtPack').addEventListener('click',()=>{const art={'intro.background':'assets/jotta-brand-intro.svg','hero.background':'assets/jotta-developer-workspace.svg','about.image':'assets/jotta-profile-identity.svg','gallery.highlight':'assets/jotta-gallery-board.svg'};for(const [path,value] of Object.entries(art))set(path,value);for(const [id,image] of Object.entries({'hunters':'jotta-hunters-forest.svg','lab':'jotta-systems-lab.svg'})){const i=content.projects.findIndex(p=>p.id===id);if(i>=0)set(`projects.${i}.image`,`assets/${image}`)}const game=content.games.findIndex(g=>g.id==='cacadores'||g.name?.includes('Caçadores'));if(game>=0)set(`games.${game}.image`,'assets/jotta-hunters-forest.svg');coverEditor();projectEditor();gameEditor();toast('Temas JOTTA Developer aplicados! Clique em PUBLICAR ALTERAÇÕES.');});
+$('#applyArtPack').addEventListener('click',()=>{const art={'intro.background':'assets/jotta-intro-clean.svg','hero.background':'assets/jotta-developer-workspace.svg','about.image':'assets/jotta-profile-identity.svg','gallery.highlight':'assets/jotta-gallery-board.svg'};for(const [path,value] of Object.entries(art))set(path,value);for(const [id,image] of Object.entries({'hunters':'jotta-hunters-forest.svg','lab':'jotta-systems-lab.svg'})){const i=content.projects.findIndex(p=>p.id===id);if(i>=0)set(`projects.${i}.image`,`assets/${image}`)}const game=content.games.findIndex(g=>g.id==='cacadores'||g.name?.includes('Caçadores'));if(game>=0)set(`games.${game}.image`,'assets/jotta-hunters-forest.svg');coverEditor();projectEditor();gameEditor();toast('Temas JOTTA Developer aplicados! Clique em PUBLICAR ALTERAÇÕES.');});
 $('#addGame').addEventListener('click',()=>{content.games.push({id:'game-'+Date.now().toString(36),name:'NOVO JOGO',genre:'Roblox Experience',status:'Em desenvolvimento',description:'',image:'',link:'',visible:true});dirty();gameEditor();navigate('games')});
 $('#closePicker').addEventListener('click',()=>{$('#mediaPicker').hidden=true});$('#mediaPicker').addEventListener('click',e=>{if(e.target===$('#mediaPicker'))$('#mediaPicker').hidden=true});
 $('#exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(content,null,2)],{type:'application/json'}),a=pick('a');a.href=URL.createObjectURL(blob);a.download='jotta-site-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)});
 $('#importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const c=JSON.parse(await f.text());if(!c||!Array.isArray(c.projects)||!c.hero||!c.links)throw Error('Backup inválido');content=c;content.games||=[];dirty();rebuild();toast('Backup importado. Clique em Publicar alterações.')}catch(er){toast(er.message,true)}e.target.value=''});
 const file=$('#mediaFile'),zone=$('#dropzone');zone.addEventListener('click',e=>{if(e.target!==file)file.click()});file.addEventListener('click',e=>e.stopPropagation());zone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();file.click()}});for(const event of ['dragover','dragenter'])zone.addEventListener(event,e=>{e.preventDefault();zone.classList.add('drag')});for(const event of ['dragleave','drop'])zone.addEventListener(event,e=>{e.preventDefault();zone.classList.remove('drag')});zone.addEventListener('drop',e=>{if(e.dataTransfer.files?.length){file.files=e.dataTransfer.files;file.dispatchEvent(new Event('change'))}});
-file.addEventListener('change',()=>{const f=file.files?.[0];$('#selectedFile').hidden=!f;if(f)$('#selectedFile').textContent=`${f.name} • ${(f.size/1024/1024).toFixed(1)} MB`});
-$('#uploadForm').addEventListener('submit',e=>{e.preventDefault();const f=file.files?.[0];if(!f)return toast('Selecione uma imagem ou vídeo.',true);const vid=f.type.startsWith('video/'),max=(vid?80:15)*1048576;if(f.size>max)return toast('Arquivo acima do limite permitido.',true);const btn=$('#uploadBtn'),bar=$('#uploadBar'),prog=$('#uploadProgress');btn.disabled=true;prog.hidden=false;bar.style.width='0%';$('#uploadStatus').textContent='Enviando...';const data=new FormData();data.append('media',f);data.append('title',$('#mediaTitle').value.trim());data.append('description',$('#mediaDescription').value.trim());data.append('category',$('#mediaCategory').value);const xhr=new XMLHttpRequest();xhr.open('POST','/api/admin/media');xhr.upload.onprogress=ev=>{if(ev.lengthComputable)bar.style.width=Math.round(ev.loaded/ev.total*98)+'%'};xhr.onload=async()=>{btn.disabled=false;let result={};try{result=JSON.parse(xhr.responseText)}catch{}if(xhr.status>=200&&xhr.status<300){bar.style.width='100%';const placement=$('#uploadPlacement').value;if(placement&&result.item?.type==='image'){set(placement,result.item.url);coverEditor();projectEditor();gameEditor();$('#uploadStatus').textContent='Upload concluído. Clique em Publicar alterações para aplicar a capa.'}else $('#uploadStatus').textContent='Upload concluído e publicado na galeria.';file.value='';$('#selectedFile').hidden=true;await fetchMedia();toast('Mídia publicada!')}else{$('#uploadStatus').textContent='Falha no upload';toast(result.error||'Falha no upload',true)}};xhr.onerror=()=>{btn.disabled=false;toast('Erro de conexão durante upload',true)};xhr.send(data)});
+
+file.addEventListener('change',()=>{
+ const files=Array.from(file.files||[]);
+ $('#selectedFile').hidden=!files.length;
+ if(files.length)$('#selectedFile').textContent=files.length===1
+ ?files[0].name+' • '+(files[0].size/1048576).toFixed(1)+' MB'
+ :files.length+' ARQUIVOS PRONTOS • '+(files.reduce((n,f)=>n+f.size,0)/1048576).toFixed(1)+' MB';
+});
+$('#uploadForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const files=Array.from(file.files||[]);
+ if(!files.length)return toast('Selecione uma ou mais imagens/vídeos.',true);
+ for(const f of files){const max=(f.type.startsWith('video/')?80:15)*1048576;if(f.size>max)return toast('Arquivo '+f.name+' excedeu o limite.',true)}
+ const btn=$('#uploadBtn'),bar=$('#uploadBar'),prog=$('#uploadProgress');
+ btn.disabled=true;prog.hidden=false;bar.style.width='0%';
+ let completed=0,failed=0;
+ const titleInput=$('#mediaTitle').value.trim(),singlePlacement=$('#uploadPlacement').value;
+ for(const f of files){
+   const data=new FormData();data.append('media',f);
+   data.append('title',files.length===1&&titleInput?titleInput:f.name.replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').slice(0,100));
+   data.append('description',$('#mediaDescription').value.trim());
+   data.append('category',f.type.startsWith('video/')?'videos':$('#mediaCategory').value);
+   $('#uploadStatus').textContent='Enviando '+(completed+failed+1)+' de '+files.length+': '+f.name;
+   try{
+      const item=await new Promise((resolve,reject)=>{
+        const xhr=new XMLHttpRequest();xhr.open('POST','/api/admin/media');
+        xhr.upload.onprogress=ev=>{if(ev.lengthComputable)bar.style.width=(((completed+failed)+ev.loaded/ev.total)/files.length*100).toFixed(1)+'%'};
+        xhr.onload=()=>{let obj={};try{obj=JSON.parse(xhr.responseText)}catch{}if(xhr.status>=200&&xhr.status<300)resolve(obj.item);else reject(Error(obj.error||'HTTP '+xhr.status))};
+        xhr.onerror=()=>reject(Error('Falha de conexão'));
+        xhr.send(data);
+      });
+      completed++;
+      if(files.length===1&&singlePlacement&&item?.type==='image'){
+        set(singlePlacement,item.url);coverEditor();projectEditor();gameEditor();
+      }
+   }catch(err){failed++;console.error('Upload:',f.name,err.message);toast('Erro em '+f.name+': '+err.message,true)}
+   bar.style.width=((completed+failed)/files.length*100).toFixed(1)+'%';
+ }
+ btn.disabled=false;
+ if(completed){file.value='';$('#selectedFile').hidden=true;await fetchMedia()}
+ const message=completed+' de '+files.length+' arquivo(s) publicado(s)'+(failed?' • '+failed+' com erro':'');
+ $('#uploadStatus').textContent=message+(singlePlacement&&files.length===1?' • Publique as alterações para aplicar a capa.':'');
+ toast(message,failed>0);
+});
 $('#reloadMedia').addEventListener('click',fetchMedia);addEventListener('beforeunload',e=>{if(changed){e.preventDefault();e.returnValue=''}});init();
 })();
