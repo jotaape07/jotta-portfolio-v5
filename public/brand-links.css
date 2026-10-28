@@ -1,0 +1,14 @@
+/* JOTTA STUDIOS — Brand links with official brand marks via Simple Icons */
+.j7-brand-icon{width:19px;height:19px;display:inline-block;vertical-align:middle;object-fit:contain;flex:none;filter:invert(1);opacity:.94;transition:transform .25s ease,opacity .25s ease}
+a:hover>.j7-brand-icon,a:focus-visible>.j7-brand-icon{transform:scale(1.13);opacity:1}
+.j7-email-icon{filter:none!important}
+.j7-discord-top{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(115,135,249,.45);background:rgba(88,101,242,.12);padding:13px 16px;color:#ebecff;font:700 10px 'Space Mono',monospace;letter-spacing:.05em;white-space:nowrap;transition:box-shadow .25s,background .25s,border-color .25s}
+.j7-discord-top .j7-brand-icon{width:17px;height:17px}
+.j7-discord-top:hover{background:rgba(88,101,242,.28);border-color:#858dff;box-shadow:0 0 25px rgba(88,101,242,.23)}
+.nav-menu .j7-nav-discord-link{display:none}
+.contact-links a .j7-brand-icon{width:24px;height:24px;margin-right:13px;filter:invert(1)}
+.contact-links a .j7-email-icon{filter:none}
+.nav-github .j7-brand-icon,.hero-buttons .j7-brand-icon{width:16px;height:16px;margin-right:6px}
+@media(max-width:1370px){.j7-discord-top{display:none}.nav-menu .j7-nav-discord-link{display:inline-flex;align-items:center;gap:7px}.nav-menu .j7-brand-icon{width:15px;height:15px}}
+@media(max-width:870px){.nav-menu .j7-nav-discord-link{display:inline-flex}.contact-links a .j7-brand-icon{width:20px;height:20px}}
+@media(prefers-reduced-motion:reduce){.j7-brand-icon,.j7-discord-top{transition:none}}

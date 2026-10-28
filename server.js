@@ -62,6 +62,7 @@ function normalize(doc){const d=clone(DEFAULT),c=doc&&typeof doc==='object'&&!Ar
  d.booster={discount:Number.isFinite(bd)?Math.min(25,Math.max(0,Math.round(bd))):DEFAULT.booster.discount,
  cap:Number.isFinite(bc)?Math.min(200,Math.max(0,Math.round(bc))):DEFAULT.booster.cap,
  perks:bp.slice(0,5).map(x=>clean(x,110)).filter(Boolean)};
+ if(['xwjoaolk','@xwjoaolk'].includes(d.links.discord))d.links.discord='https://discord.gg/Bds2pxD7qd';
  for(const k in d.settings){if(typeof d.settings[k]==='boolean')d.settings[k]=Boolean(c.settings?.[k]??d.settings[k]);else d.settings[k]=clean(c.settings?.[k]??d.settings[k],220)}return d;
 }
 async function localFile(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'))}catch{return clone(fallback)}}
