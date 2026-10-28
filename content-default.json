@@ -2,24 +2,24 @@
   "brand": "JOTTA",
   "accent": "red",
   "intro": {
-    "overline": "JOTTA STUDIO / INDEPENDENT DEVELOPMENT",
-    "line": "IDEIAS VIRAM JOGOS.",
+    "overline": "JOTTA STUDIO / CREATIVE GAME DEVELOPMENT",
+    "line": "O FUTURO É CRIADO.",
     "note": "LUAU / ROBLOX STUDIO / DESIGN / DEVELOPMENT",
-    "background": "assets/jotta-command-studio.svg"
+    "background": "assets/jotta-brand-intro.svg"
   },
   "hero": {
     "eyebrow": "JOTTA STUDIO // LEAD DEVELOPER & SCRIPTER",
-    "line1": "CRIANDO",
-    "line2": "UNIVERSOS.",
-    "description": "Desenvolvimento, scripting e design para transformar ideias em experiências que realmente impressionam.",
-    "background": "assets/jotta-forest-scene.svg",
+    "line1": "DESENVOLVO",
+    "line2": "EXPERIÊNCIAS.",
+    "description": "Sou Jotta, Lead Developer & Scripter. Crio jogos no Roblox, sistemas inteligentes e interfaces que transformam boas ideias em experiências de verdade.",
+    "background": "assets/jotta-developer-workspace.svg",
     "avatar": true
   },
   "about": {
     "kicker": "QUEM ESTÁ POR TRÁS",
-    "title": "IDEIAS VIRAM EXPERIÊNCIAS.",
-    "description": "Sou Jotta, desenvolvedor e scripter com foco em Roblox, interfaces e sistemas. Transformo ideias em experiências interativas — da primeira linha de código ao lançamento.",
-    "image": "assets/04_projeto_cacadores.jpg"
+    "title": "POR TRÁS DO CÓDIGO.",
+    "description": "Desenvolvedor focado em Roblox Studio, Luau, interfaces e automações. Construo mecânicas, sistemas e mundos com personalidade, do conceito ao lançamento.",
+    "image": "assets/jotta-profile-identity.svg"
   },
   "links": {
     "roblox": "https://www.roblox.com/pt/users/1729771980/profile",
@@ -32,11 +32,11 @@
     {
       "id": "hunters",
       "number": "01",
-      "category": "HORROR EXPERIENCE",
+      "category": "ROBLOX / HORROR EXPERIENCE",
       "name": "CAÇADORES DE LENDAS",
       "subtitle": "O RETORNO",
-      "description": "Terror, exploração e lendas em uma experiência Roblox R6. Uma produção autoral focada em ambientação, sistemas e investigação.",
-      "image": "assets/04_projeto_cacadores.jpg",
+      "description": "Terror e investigação: lendas, exploração, mistério e atmosfera sombria. Um jogo construído no Roblox Studio.",
+      "image": "assets/jotta-hunters-forest.svg",
       "fallback": "assets/forest-poster.svg",
       "link": "https://www.roblox.com/pt/games/87519362651583/",
       "active": true
@@ -44,11 +44,11 @@
     {
       "id": "lab",
       "number": "02",
-      "category": "SCRIPTS / AUTOMATIONS",
+      "category": "DEVELOPER / ENGINEERING",
       "name": "SYSTEMS LAB",
       "subtitle": "BOTS & INTERFACES",
-      "description": "Experimentos e soluções em scripting, bots, interfaces e automação: tecnologia aplicada a problemas reais.",
-      "image": "assets/06_projeto_systems_lab.jpg",
+      "description": "Luau, bots, interfaces e experiências digitais: soluções desenvolvidas para quem gosta de tecnologia de verdade.",
+      "image": "assets/jotta-systems-lab.svg",
       "fallback": "assets/systems-poster.svg",
       "link": "",
       "active": true
@@ -106,14 +106,14 @@
   "gallery": {
     "title": "INSIDE THE STUDIO",
     "subtitle": "Capas, interfaces, bastidores e visuais dos meus projetos.",
-    "highlight": "assets/jotta-visual-archive.svg"
+    "highlight": "assets/jotta-gallery-board.svg"
   },
   "settings": {
     "showServices": true,
     "showGallery": true,
     "showSkills": true,
     "showAbout": true,
-    "marquee": "JOTTA STUDIO ✳ ROBLOX DEVELOPMENT ✳ LUAU SCRIPTING ✳ UI / UX ✳ SYSTEMS LAB ✳",
+    "marquee": "JOTTA ✳ LEAD DEVELOPER ✳ ROBLOX STUDIO ✳ LUAU SCRIPTING ✳ UI DESIGN ✳ CREATIVE SYSTEMS ✳",
     "showGames": true
   },
   "games": [
@@ -123,7 +123,7 @@
       "genre": "Terror / Exploração",
       "status": "Em desenvolvimento",
       "description": "Explore mistérios, enfrente lendas e descubra os segredos de um mundo sombrio.",
-      "image": "assets/07_jogo_cacadores_retorno.jpg",
+      "image": "assets/jotta-hunters-forest.svg",
       "link": "https://www.roblox.com/pt/games/87519362651583/",
       "visible": true
     }
