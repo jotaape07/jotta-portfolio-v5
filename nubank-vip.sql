@@ -89,3 +89,6 @@ begin
 end $$;
 revoke all on function public.jotta_manual_vip_approve(uuid,text) from public,anon,authenticated;
 grant execute on function public.jotta_manual_vip_approve(uuid,text) to service_role;
+
+-- Atualiza o cache das tabelas do PostgREST após alterações executadas no SQL Editor.
+notify pgrst, 'reload schema';

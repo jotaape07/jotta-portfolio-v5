@@ -61,7 +61,9 @@ async function db(path,method='GET',body,prefer){
  if(!secret.startsWith('sb_secret_'))headers.Authorization='Bearer '+secret;
  if(body!==undefined)headers['Content-Type']='application/json';
  if(prefer)headers.Prefer=prefer;
- const response=await fetch(process.env.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/'+path,{
+ const endpoint=new URL(String(process.env.SUPABASE_URL||'').trim());
+ if(endpoint.protocol!=='https:')throw fail('URL do Supabase inválida.',503);
+ const response=await fetch(endpoint.origin+'/rest/v1/'+path,{
   method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(12000)});
  if(!response.ok){console.error('[VIP DATABASE] HTTP',response.status,path.split('?')[0]);throw fail('Falha no banco de dados.',503)}
  const content=await response.text();if(!content)return [];

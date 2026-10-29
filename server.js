@@ -7,6 +7,14 @@ const DEFAULT=require('./content-default.json');
 const CLOUD=Boolean(process.env.CLOUDINARY_CLOUD_NAME&&process.env.CLOUDINARY_API_KEY&&process.env.CLOUDINARY_API_SECRET);
 const SUPA_KEY=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||'';
 const SUPA=Boolean(process.env.SUPABASE_URL&&SUPA_KEY);
+const siteDatabaseState={ready:null,error:null};
+function supabaseRoot(){
+ const parsed=new URL(String(process.env.SUPABASE_URL||'').trim());
+ if(parsed.protocol!=='https:')throw new Error('SUPABASE_URL precisa usar https.');
+ // Some Dashboard sections include /rest/v1 in the copied API URL.
+ // Always assemble API paths once from the project origin.
+ return parsed.origin;
+}
 const PASS=process.env.ADMIN_PASSWORD||'';
 const SECRET=process.env.SESSION_SECRET||crypto.randomBytes(32).toString('hex');
 const PROD=process.env.NODE_ENV==='production';
@@ -69,17 +77,45 @@ function normalize(doc){const d=clone(DEFAULT),c=doc&&typeof doc==='object'&&!Ar
 async function localFile(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'))}catch{return clone(fallback)}}
 async function writeFile(file,obj){await fs.mkdir(path.dirname(file),{recursive:true});const temp=file+'.tmp-'+process.pid;await fs.writeFile(temp,JSON.stringify(obj,null,2));await fs.rename(temp,file)}
 async function supa(pathname,method='GET',body){
- const base=process.env.SUPABASE_URL.replace(/\/$/,'');
+ const base=supabaseRoot();
  const headers={'apikey':SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'};
  // New sb_secret keys belong ONLY in apikey. Legacy service_role is JWT and also uses Authorization.
  if(!SUPA_KEY.startsWith('sb_secret_'))headers.Authorization='Bearer '+SUPA_KEY;
  const r=await fetch(`${base}/rest/v1/${pathname}`,{method,headers,
   ...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(12000)});
- if(!r.ok)throw Error('Banco de dados indisponível: '+r.status);
+ if(!r.ok){
+  // Log only safe HTTP/status codes; never log keys, payloads or Supabase URLs.
+  const detail=await r.json().catch(()=>({}));
+  const code=/^[A-Z0-9_]{3,20}$/.test(String(detail.code||''))?detail.code:'UNKNOWN';
+  const err=new Error('Supabase '+r.status+' ('+code+')');
+  err.status=r.status;err.code=code;
+  throw err;
+ }
  return r.json();
 }
-async function readSite(){if(!SUPA)return normalize(await localFile(SITE_DB,DEFAULT));const rows=await supa('site_config?select=content&id=eq.main&limit=1');return normalize(rows[0]?.content||DEFAULT)}
-async function saveSite(obj){const doc=normalize(obj);if(SUPA)await supa('site_config?on_conflict=id','POST',[{id:'main',content:doc,updated_at:new Date().toISOString()}]);else await writeFile(SITE_DB,doc);return doc}
+async function readSite(){
+ if(!SUPA)return normalize(await localFile(SITE_DB,DEFAULT));
+ try{
+  const rows=await supa('site_config?select=content&id=eq.main&limit=1');
+  siteDatabaseState.ready=true;siteDatabaseState.error=null;
+  return normalize(rows[0]?.content||DEFAULT);
+ }catch(err){
+  siteDatabaseState.ready=false;
+  siteDatabaseState.error=err.status===404?'TABLE_OR_API_URL':'CONNECTION';
+  console.warn('[JOTTA SITE] Supabase não acessível; exibindo cópia de recuperação. '+String(err.message).slice(0,110));
+  // Recovery is READ-ONLY: never save fallback data back to the public database.
+  return normalize(await localFile(SITE_DB,DEFAULT));
+ }
+}
+async function saveSite(obj){
+ const doc=normalize(obj);
+ if(SUPA){
+  if(siteDatabaseState.ready===false)throw Error('Banco ainda não validado. Execute o SQL e atualize o painel.');
+  await supa('site_config?on_conflict=id','POST',[{id:'main',content:doc,updated_at:new Date().toISOString()}]);
+  siteDatabaseState.ready=true;
+ }else await writeFile(SITE_DB,doc);
+ return doc;
+}
 
 /* Avisos do portfólio no Discord: webhook privado armazenado apenas no Render. */
 async function notifyDiscord(title,description,link){
@@ -106,14 +142,27 @@ function diffForDiscord(before,after){
  return notes;
 }
 
-app.get('/api/site',async(req,res)=>{try{res.set('Cache-Control','no-store');res.json({content:await readSite()})}catch(e){console.error(e);res.status(503).json({error:'Não foi possível carregar o conteúdo.'})}});
+app.get('/api/site',async(req,res)=>{
+ res.set('Cache-Control','no-store');
+ try{
+  const content=await readSite();
+  const readOnly=SUPA&&siteDatabaseState.ready===false;
+  res.json({content,storage:{
+   mode:SUPA?'supabase':'local',connected:SUPA?siteDatabaseState.ready===true:false,
+   readOnly,reason:readOnly?siteDatabaseState.error:null
+  }});
+ }catch(e){
+  console.error('[JOTTA SITE]',e.message);
+  res.status(503).json({error:'Não foi possível carregar o conteúdo.'});
+ }
+});
 app.put('/api/admin/site',requireAuth,async(req,res)=>{try{
  const previous=await readSite(),result=await saveSite(req.body?.content);
  const notes=diffForDiscord(previous,result);
  let discordNotified=false;
  if(notes.length)discordNotified=await notifyDiscord('🚀 NOVA ATUALIZAÇÃO NO PORTFÓLIO',notes.join('\\n'),'https://jotta-portfolio-v5.onrender.com/');
  res.json({ok:true,content:result,persistent:SUPA,discordNotified,discordConfigured:!!process.env.DISCORD_UPDATES_WEBHOOK_URL});
- }catch(e){console.error(e);res.status(503).json({error:'Falha ao salvar. Confira o Supabase.'})}});
+ }catch(e){console.error(e);res.status(503).json({error:'Não foi possível publicar. Confira a conexão com o Supabase ou execute nubank-vip.sql novamente.'})}});
 const ROBLOX_ID='1729771980',AVATAR_TTL=4*60000,avatarCache={at:0,value:null};
 app.get('/api/roblox-avatar',async(req,res)=>{res.set('Cache-Control','no-store');if(avatarCache.value&&Date.now()-avatarCache.at<AVATAR_TTL)return res.json(avatarCache.value);
  try{const prefix='https://thumbnails.roblox.com/v1/users/',suffix=`?userIds=${ROBLOX_ID}&size=420x420&format=Png&isCircular=false`;
